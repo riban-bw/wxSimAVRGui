@@ -1,6 +1,6 @@
 /***************************************************************
- * Name:      wxArduinoMain.h
- * Purpose:   Defines Application Frame
+ * Name:      mainframe.h
+ * Purpose:   Defines main application frame
  * Author:    Brian Walton (brian@riban.co.uk)
  * Created:   2014-03-23
  * Copyright: Brian Walton (riban.co.uk)
@@ -9,17 +9,18 @@
 
 #pragma once
 
-//(*Headers(wxArduinoFrame)
+//(*Headers(mainFrame)
 #include <wx/spinctrl.h>
-#include <wx/toolbar.h>
 #include <wx/sizer.h>
 #include <wx/menu.h>
+#include <wx/panel.h>
 #include <wx/statusbr.h>
 #include <wx/frame.h>
 #include <wx/stattext.h>
-#include <wx/statbmp.h>
+#include <wx/aui/aui.h>
 #include <wx/listbox.h>
 //*)
+
 #include <map>
 
 /** Class represents a type of AVR device */
@@ -48,31 +49,83 @@ class wxFileName;
 class wxFile;
 class wxDateTime;
 
-class wxArduinoFrame: public wxFrame
+class mainFrame: public wxFrame
 {
-    public:
+	public:
 
-        wxArduinoFrame(wxWindow* parent,wxWindowID id = -1);
-        virtual ~wxArduinoFrame();
+		mainFrame(wxWindow* parent,wxWindowID id=wxID_ANY,const wxPoint& pos=wxDefaultPosition,const wxSize& size=wxDefaultSize);
+		virtual ~mainFrame();
+
         /** @brief  Handle close events
         *   @param  event The close event
         */
         void OnClose(wxCloseEvent &event);
 
-    protected:
+		//(*Declarations(mainFrame)
+		wxAuiManager* m_pAuiManager;
+		wxMenu* m_pMenuDevice;
+		wxSpinCtrl* m_pSpnFreq;
+		wxStaticText* m_pLblDeviceType;
+		wxPanel* Panel1;
+		wxMenuBar* m_pMenubar;
+		wxMenuItem* m_pMenuitemLoadHex;
+		wxStatusBar* m_pStatusBar;
+		wxMenuItem* m_pMenuitemStop;
+		wxMenuItem* m_pMenuitemWipe;
+		wxMenuItem* m_pMenuitemLogToFile;
+		wxMenu* Menu3;
+		wxMenu* m_pMenuProfile;
+		wxMenuItem* m_pMenuitemCode;
+		wxMenu* m_pMenuLog;
+		wxMenuItem* m_pMenuitemStart;
+		wxListBox* m_pLstLog;
+		wxMenuItem* m_pMenuitemQuit;
+		wxMenuItem* m_pMenuitemReset;
+		wxMenuItem* m_pMenuitemFirmware;
+		wxMenu* m_pMenuMcu;
+		wxStaticText* m_pLblFrequency;
+		wxMenuItem* m_pMenuitemPause;
+		wxAuiToolBar* m_pToolbarControl;
+		wxMenuItem* m_pMenuitemSerial;
+		//*)
+
+	protected:
         wxAvr* m_pAvr; //!< Pointer to the AVR thread class instance
-        wxCriticalSection m_pThreadCS;    // protects the m_pThread pointer
-        friend class wxAvr;            // allow it to access our m_pAvr
+        friend class wxAvr; // allow it to access our m_pAvr
 
-    private:
+		//(*Identifiers(mainFrame)
+		static const long ID_TOOLBARITEM_START;
+		static const long ID_TOOLBARITEM_PAUSE;
+		static const long ID_TOOLBARITEM_STOP;
+		static const long ID_TOOLBARITEM_RESET;
+		static const long ID_TOOLBAR_CONTROL;
+		static const long ID_LBLDEVICETYPE;
+		static const long ID_LBLFREQUENCY;
+		static const long ID_SPNFREQ;
+		static const long ID_LSTLOG;
+		static const long ID_PANEL1;
+		static const long ID_MENUITEM_FIRMWARE;
+		static const long ID_MENUITEM_CODE;
+		static const long ID_MENUITEM_LOADHEX;
+		static const long idMenuQuit;
+		static const long ID_MENUITEM_PROFILE;
+		static const long ID_MENUITEM_MCU;
+		static const long ID_MENUITEM_WIPE;
+		static const long ID_MENUITEM_SERIAL;
+		static const long ID_MENUITEM_START;
+		static const long ID_MENUITEM_PAUSE;
+		static const long ID_MENUITEM_STOP;
+		static const long ID_MENUITEM_RESET;
+		static const long ID_MENUITEM_LOGTOFILE;
+		static const long idMenuAbout;
+		static const long ID_STATUSBAR;
+		//*)
 
-        //(*Handlers(wxArduinoFrame)
+	private:
+
+		//(*Handlers(mainFrame)
         void OnQuit(wxCommandEvent& event);
         void OnAbout(wxCommandEvent& event);
-        void OnBtnStartClick(wxCommandEvent& event);
-        void OnBtnStopClick(wxCommandEvent& event);
-        void OnBtnPauseClick(wxCommandEvent& event);
-        void OnBtnResetClick(wxCommandEvent& event);
         void OnMenuDeviceType(wxCommandEvent& event);
         void OnMenuProfile(wxCommandEvent& event);
         void OnSpnFreqChange(wxSpinEvent& event);
@@ -82,66 +135,11 @@ class wxArduinoFrame: public wxFrame
         void OnMenuitemWipeSelected(wxCommandEvent& event);
         void OnMenuitemLogToFileSelected(wxCommandEvent& event);
         void OnMenuitemSerialSelected(wxCommandEvent& event);
-        //*)
-
-        //(*Identifiers(wxArduinoFrame)
-        static const long ID_LBLDEVICETYPE;
-        static const long ID_LBLFREQUENCY;
-        static const long ID_SPNFREQ;
-        static const long ID_BMPLED1;
-        static const long ID_LSTLOG;
-        static const long ID_MENUITEM_FIRMWARE;
-        static const long ID_MENUITEM_CODE;
-        static const long ID_MENUITEM_LOADHEX;
-        static const long idMenuQuit;
-        static const long ID_MENUITEM_PROFILE;
-        static const long ID_MENUITEM_MCU;
-        static const long ID_MENUITEM_WIPE;
-        static const long ID_MENUITEM_SERIAL;
-        static const long ID_MENUITEM_START;
-        static const long ID_MENUITEM_PAUSE;
-        static const long ID_MENUITEM_STOP;
-        static const long ID_MENUITEM_RESET;
-        static const long ID_MENUITEM_LOGTOFILE;
-        static const long idMenuAbout;
-        static const long ID_STATUSBAR;
-        static const long ID_TOOLBAR_START;
-        static const long ID_TOOLBAR_PAUSE;
-        static const long ID_TOOLBAR_STOP;
-        static const long ID_TOOLBAR_RESET;
-        static const long ID_TOOLBAR;
-        //*)
-
-        //(*Declarations(wxArduinoFrame)
-        wxMenu* m_pMenuDevice;
-        wxSpinCtrl* m_pSpnFreq;
-        wxStaticText* m_pLblDeviceType;
-        wxMenuBar* m_pMenubar;
-        wxMenuItem* m_pMenuitemLoadHex;
-        wxStatusBar* m_pStatusBar;
-        wxMenuItem* m_pMenuitemStop;
-        wxMenuItem* m_pMenuitemWipe;
-        wxMenuItem* m_pMenuitemLogToFile;
-        wxMenu* Menu3;
-        wxMenu* m_pMenuProfile;
-        wxMenuItem* m_pMenuitemCode;
-        wxMenu* m_pMenuLog;
-        wxToolBar* m_pToolBar;
-        wxMenuItem* m_pMenuitemStart;
-        wxStaticBitmap* m_pBmpLed1;
-        wxToolBarToolBase* m_pToolbarStart;
-        wxListBox* m_pLstLog;
-        wxMenuItem* m_pMenuitemQuit;
-        wxToolBarToolBase* m_pToolbarReset;
-        wxMenuItem* m_pMenuitemReset;
-        wxMenuItem* m_pMenuitemFirmware;
-        wxToolBarToolBase* m_pToolbarStop;
-        wxMenu* m_pMenuMcu;
-        wxStaticText* m_pLblFrequency;
-        wxMenuItem* m_pMenuitemPause;
-        wxToolBarToolBase* m_pToolbarPause;
-        wxMenuItem* m_pMenuitemSerial;
-        //*)
+        void OnMenuitemMcuStart(wxCommandEvent& event);
+        void OnMenuitemMcuPause(wxCommandEvent& event);
+        void OnMenuitemMcuStop(wxCommandEvent& event);
+        void OnMenuitemMcuReset(wxCommandEvent& event);
+		//*)
 
         /** @brief  Updates dispaly with current running state
         *   @param  nState Running state
@@ -197,6 +195,9 @@ class wxArduinoFrame: public wxFrame
         wxFileName* m_pFnFirmware; //!< Pointer to name of firmware file
         wxFileName* m_pFnCode; //!< Pointer to name of code file
         wxFileName* m_pFnHex; //!< Pointer to name of Intel hex file
+        wxFileName* m_pFnConfig; //!< Pointer to name of configuration file. Also used for path to other configuration data.
 
-        DECLARE_EVENT_TABLE()
+		DECLARE_EVENT_TABLE()
 };
+
+

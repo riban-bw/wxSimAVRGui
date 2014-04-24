@@ -1,5 +1,5 @@
 /***************************************************************
- * Name:      wxArduinoApp.h
+ * Name:      wxSimAVRGuiApp.h
  * Purpose:   Defines Application Class
  * Author:    Brian Walton (brian@riban.co.uk)
  * Created:   2014-03-23
@@ -7,15 +7,12 @@
  * License:
  **************************************************************/
 
-#ifndef WXARDUINOAPP_H
-#define WXARDUINOAPP_H
+#pragma once
 
 #include <wx/app.h>
 
-class wxArduinoApp : public wxApp
+class wxSimAVRGuiApp : public wxApp
 {
     public:
         virtual bool OnInit();
 };
-
-#endif // WXARDUINOAPP_H

@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<wxsmith>
+	<object class="wxFrame" name="mainFrame">
+		<id_arg>0</id_arg>
+		<object class="wxAuiManager" variable="m_pAuiManager" member="yes">
+			<object class="AuiManagerItem">
+				<object class="wxAuiToolBar" name="ID_TOOLBAR_CONTROL" variable="m_pToolbarControl" member="yes">
+					<pos>75,96</pos>
+					<object class="AuiToolBarItem">
+						<object class="wxAuiToolBarItem" name="ID_TOOLBARITEM_START" variable="m_pToolbaritemStart" member="yes">
+							<bitmap code="play_xpm" />
+							<shorthelp>Start simulator</shorthelp>
+						</object>
+						<label>Start</label>
+					</object>
+					<object class="AuiToolBarItem">
+						<object class="wxAuiToolBarItem" name="ID_TOOLBARITEM_PAUSE" variable="m_pToolbaritemPause" member="yes">
+							<bitmap code="pause_xpm" />
+							<shorthelp>Pause simulator</shorthelp>
+						</object>
+						<label>Pause</label>
+					</object>
+					<object class="AuiToolBarItem">
+						<object class="wxAuiToolBarItem" name="ID_TOOLBARITEM_STOP" variable="m_pToolbaritemStop" member="yes">
+							<bitmap code="stop_xpm" />
+							<shorthelp>Stop simulator</shorthelp>
+						</object>
+						<label>Stop</label>
+					</object>
+					<object class="AuiToolBarItem">
+						<object class="wxAuiToolBarItem" name="ID_TOOLBARITEM_RESET" variable="m_pToolbaritemReset" member="yes">
+							<bitmap code="reset_xpm" />
+							<shorthelp>Reset MCU</shorthelp>
+						</object>
+						<label>Reset</label>
+					</object>
+				</object>
+				<name>ToolbarControl</name>
+				<standardpanetype>Toolbar</standardpanetype>
+				<caption>Toolbar</caption>
+				<captionvisible>0</captionvisible>
+				<minimizebutton>0</minimizebutton>
+				<maximizebutton>0</maximizebutton>
+				<pinbutton>0</pinbutton>
+				<closebutton>0</closebutton>
+				<layer>10</layer>
+				<dockfixed>0</dockfixed>
+				<dockabledirection></dockabledirection>
+				<resizable>0</resizable>
+				<gripper>Default</gripper>
+				<destroyonclose>0</destroyonclose>
+				<firstadd>0</firstadd>
+			</object>
+			<object class="AuiManagerItem">
+				<object class="wxPanel" name="ID_PNLMAIN" variable="m_pPnlMain" member="yes">
+					<pos>172,246</pos>
+					<object class="wxFlexGridSizer" variable="FlexGridSizer1" member="no">
+						<cols>1</cols>
+						<growablecols>0</growablecols>
+						<growablerows>1</growablerows>
+						<object class="sizeritem">
+							<object class="wxFlexGridSizer" variable="FlexGridSizer3" member="no">
+								<growablecols>4</growablecols>
+								<object class="sizeritem">
+									<object class="wxStaticText" name="wxID_ANY" variable="StaticText1" member="no">
+										<label>MCU</label>
+										<style>wxALIGN_CENTRE</style>
+									</object>
+									<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+									<border>5</border>
+									<option>1</option>
+								</object>
+								<object class="sizeritem">
+									<object class="wxStaticText" name="ID_LBLDEVICETYPE" variable="m_pLblDeviceType" member="yes">
+										<label>-</label>
+										<size>100,17</size>
+										<bg>#FFFFFF</bg>
+										<style>wxALIGN_CENTRE</style>
+									</object>
+									<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+									<border>5</border>
+									<option>1</option>
+								</object>
+								<object class="sizeritem">
+									<object class="wxStaticText" name="ID_LBLFREQUENCY" variable="m_pLblFrequency" member="yes">
+										<label>Frequency</label>
+										<style>wxALIGN_CENTRE</style>
+									</object>
+									<flag>wxALL|wxEXPAND|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL</flag>
+									<border>5</border>
+									<option>1</option>
+								</object>
+								<object class="sizeritem">
+									<object class="wxSpinCtrl" name="ID_SPNFREQ" variable="m_pSpnFreq" member="yes">
+										<value>0</value>
+										<max>99999999</max>
+										<handler function="OnSpnFreqChange" entry="EVT_SPINCTRL" />
+									</object>
+									<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+									<border>5</border>
+									<option>1</option>
+								</object>
+								<object class="spacer">
+									<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+									<border>5</border>
+									<option>1</option>
+								</object>
+							</object>
+							<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+							<border>5</border>
+							<option>1</option>
+						</object>
+						<object class="sizeritem">
+							<object class="wxFlexGridSizer" variable="FlexGridSizer2" member="no">
+								<cols>1</cols>
+								<growablecols>0</growablecols>
+								<growablerows>0</growablerows>
+								<object class="sizeritem">
+									<object class="wxListBox" name="ID_LSTLOG" variable="m_pLstLog" member="yes">
+										<default>-1</default>
+									</object>
+									<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+									<option>1</option>
+								</object>
+							</object>
+							<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+							<border>5</border>
+							<option>1</option>
+						</object>
+					</object>
+				</object>
+				<name>PanelMain</name>
+				<standardpanetype>Center</standardpanetype>
+				<caption>Main Panel</caption>
+				<captionvisible>0</captionvisible>
+				<minimizebutton>0</minimizebutton>
+				<maximizebutton>0</maximizebutton>
+				<pinbutton>0</pinbutton>
+				<closebutton>0</closebutton>
+				<dockdirection>Center</dockdirection>
+				<dockfixed>0</dockfixed>
+				<dockabledirection></dockabledirection>
+				<floatable>0</floatable>
+				<floatingposition>0,0</floatingposition>
+				<floatingsize>0,0</floatingsize>
+				<movable>0</movable>
+				<destroyonclose>0</destroyonclose>
+				<firstadd>0</firstadd>
+			</object>
+		</object>
+		<object class="wxMenuBar" variable="m_pMenubar" member="yes">
+			<object class="wxMenu" variable="Menu1" member="no">
+				<label>&amp;File</label>
+				<object class="wxMenuItem" name="ID_MENUITEM_FIRMWARE" variable="m_pMenuitemFirmware" member="yes">
+					<label>Firmware</label>
+					<help>Load firmware</help>
+					<handler function="OnMenuitemFirmwareSelected" entry="EVT_MENU" />
+				</object>
+				<object class="wxMenuItem" name="ID_MENUITEM_CODE" variable="m_pMenuitemCode" member="yes">
+					<label>Load Code</label>
+					<help>Load code</help>
+					<handler function="OnMenuitemCodeSelected" entry="EVT_MENU" />
+				</object>
+				<object class="wxMenuItem" name="ID_MENUITEM_LOADHEX" variable="m_pMenuitemLoadHex" member="yes">
+					<label>Load Hex</label>
+					<accel>Ctrl-O</accel>
+					<help>Load Intel hex file</help>
+					<handler function="OnMenuitemLoadHexSelected" entry="EVT_MENU" />
+				</object>
+				<object class="wxMenuItem" name="idMenuQuit" variable="m_pMenuitemQuit" member="yes">
+					<label>Quit</label>
+					<accel>Alt-F4</accel>
+					<help>Quit application</help>
+					<handler function="OnQuit" entry="EVT_MENU" />
+				</object>
+			</object>
+			<object class="wxMenu" variable="m_pMenuDevice" member="yes">
+				<label>Device</label>
+				<object class="wxMenu" name="ID_MENUITEM_PROFILE" variable="m_pMenuProfile" member="yes">
+					<label>Profile</label>
+					<object class="break" />
+				</object>
+				<object class="wxMenu" name="ID_MENUITEM_MCU" variable="m_pMenuMcu" member="yes">
+					<label>MCU</label>
+					<object class="break" />
+				</object>
+				<object class="wxMenuItem" name="ID_MENUITEM_WIPE" variable="m_pMenuitemWipe" member="yes">
+					<label>Wipe device</label>
+					<help>Wipe all data from device</help>
+					<handler function="OnMenuitemWipeSelected" entry="EVT_MENU" />
+				</object>
+				<object class="wxMenuItem" name="ID_MENUITEM_SERIAL" variable="m_pMenuitemSerial" member="yes">
+					<label>Enable Serial Port</label>
+					<help>Enable the serial port on the MCU</help>
+					<handler function="OnMenuitemSerialSelected" entry="EVT_MENU" />
+					<checkable>1</checkable>
+				</object>
+			</object>
+			<object class="wxMenu" variable="Menu3" member="yes">
+				<label>Control</label>
+				<object class="wxMenuItem" name="ID_MENUITEM_START" variable="m_pMenuitemStart" member="yes">
+					<label>Start</label>
+					<accel>F9</accel>
+					<help>Start MCU</help>
+					<bitmap code="play_xpm" />
+					<handler function="OnMenuitemMcuStart" entry="EVT_MENU" />
+				</object>
+				<object class="wxMenuItem" name="ID_MENUITEM_PAUSE" variable="m_pMenuitemPause" member="yes">
+					<label>Pause</label>
+					<help>Pause MCU</help>
+					<bitmap code="pause_xpm" />
+					<handler function="OnMenuitemMcuPause" entry="EVT_MENU" />
+				</object>
+				<object class="wxMenuItem" name="ID_MENUITEM_STOP" variable="m_pMenuitemStop" member="yes">
+					<label>Stop</label>
+					<accel>Ctrl-F9</accel>
+					<help>Stop MCU</help>
+					<bitmap code="stop_xpm" />
+					<handler function="OnMenuitemMcuStop" entry="EVT_MENU" />
+				</object>
+				<object class="wxMenuItem" name="ID_MENUITEM_RESET" variable="m_pMenuitemReset" member="yes">
+					<label>Reset</label>
+					<accel>Ctrl-R</accel>
+					<help>Reset MCU</help>
+					<bitmap code="reset_xpm" />
+					<handler function="OnMenuitemMcuReset" entry="EVT_MENU" />
+				</object>
+			</object>
+			<object class="wxMenu" variable="m_pMenuLog" member="yes">
+				<label>Log</label>
+				<object class="wxMenuItem" name="ID_MENUITEM_LOGTOFILE" variable="m_pMenuitemLogToFile" member="yes">
+					<label>Log to file</label>
+					<help>Record log entries to file</help>
+					<handler function="OnMenuitemLogToFileSelected" entry="EVT_MENU" />
+					<checkable>1</checkable>
+				</object>
+			</object>
+			<object class="wxMenu" variable="Menu2" member="no">
+				<label>Help</label>
+				<object class="wxMenuItem" name="idMenuAbout" variable="MenuItem2" member="no">
+					<label>About</label>
+					<accel>F1</accel>
+					<help>Show info</help>
+					<handler function="OnAbout" entry="EVT_MENU" />
+				</object>
+			</object>
+		</object>
+		<object class="wxStatusBar" name="ID_STATUSBAR" variable="m_pStatusBar" member="yes">
+			<fields>3</fields>
+			<widths>-10,-10,-10</widths>
+			<styles>wxSB_NORMAL,wxSB_NORMAL,wxSB_NORMAL</styles>
+		</object>
+	</object>
+</wxsmith>

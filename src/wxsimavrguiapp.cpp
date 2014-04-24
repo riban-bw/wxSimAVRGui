@@ -1,5 +1,5 @@
 /***************************************************************
- * Name:      wxArduinoApp.cpp
+ * Name:      wxSimAVRGuiApp.cpp
  * Purpose:   Code for Application Class
  * Author:    Brian Walton (brian@riban.co.uk)
  * Created:   2014-03-23
@@ -10,20 +10,20 @@
 #include "wxsimavrguiapp.h"
 
 //(*AppHeaders
-#include "wxsimavrguimain.h"
+#include "mainframe.h"
 #include <wx/image.h>
 //*)
 
-IMPLEMENT_APP(wxArduinoApp);
+IMPLEMENT_APP(wxSimAVRGuiApp);
 
-bool wxArduinoApp::OnInit()
+bool wxSimAVRGuiApp::OnInit()
 {
     //(*AppInitialize
     bool wxsOK = true;
     wxInitAllImageHandlers();
     if ( wxsOK )
     {
-    	wxArduinoFrame* Frame = new wxArduinoFrame(0);
+    	mainFrame* Frame = new mainFrame(0);
     	Frame->Show();
     	SetTopWindow(Frame);
     }

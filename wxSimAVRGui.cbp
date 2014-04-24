@@ -17,8 +17,8 @@
 					<Add option="`wx-config --cflags --debug`" />
 				</Compiler>
 				<Linker>
-					<Add option="`wx-config --libs --debug`" />
-					<Add directory="../wxSimAVR/bin/Debug" />
+					<Add option="`wx-config --libs std,aui --debug`" />
+					<Add library="../wxSimAVR/lib/libwxsimavr_d.a" />
 				</Linker>
 			</Target>
 			<Target title="Release">
@@ -33,8 +33,8 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
-					<Add option="`wx-config --libs`" />
-					<Add directory="../wxSimAVR/bin/Release" />
+					<Add option="`wx-config --libs std,aui`" />
+					<Add library="wxsimavr" />
 				</Linker>
 			</Target>
 		</Build>
@@ -48,22 +48,22 @@
 		</Compiler>
 		<Linker>
 			<Add library="simavr" />
-			<Add library="wxsimavr" />
 			<Add library=":libelf.so.0" />
 			<Add library="util" />
+			<Add directory="../wxSimAVR/lib" />
 		</Linker>
+		<Unit filename="include/mainframe.h" />
 		<Unit filename="include/wxsimavrguiapp.h" />
-		<Unit filename="include/wxsimavrguimain.h" />
+		<Unit filename="src/mainframe.cpp" />
 		<Unit filename="src/wxsimavrguiapp.cpp" />
-		<Unit filename="src/wxsimavrguimain.cpp" />
-		<Unit filename="wxsmith/wxsimavrguiframe.wxs" />
+		<Unit filename="wxsmith/mainFrame.wxs" />
 		<Extensions>
 			<code_completion />
 			<envvars />
 			<wxsmith version="1">
 				<gui name="wxWidgets" src="src/wxSimAVRGuiApp.cpp" main="wxSimAVRGuiFrame" init_handlers="necessary" language="CPP" />
 				<resources>
-					<wxFrame wxs="wxsmith/wxSimAVRGuiframe.wxs" src="src/wxSimAVRGuiMain.cpp" hdr="include/wxSimAVRGuiMain.h" fwddecl="0" i18n="1" name="wxSimAVRGuiFrame" language="CPP" />
+					<wxFrame wxs="wxsmith/mainFrame.wxs" src="mainframe.cpp" hdr="mainframe.h" fwddecl="0" i18n="1" name="mainFrame" language="CPP" />
 				</resources>
 			</wxsmith>
 			<debugger />
