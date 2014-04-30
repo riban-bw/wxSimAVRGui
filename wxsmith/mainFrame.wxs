@@ -116,10 +116,11 @@
 								<growablecols>0</growablecols>
 								<growablerows>0</growablerows>
 								<object class="sizeritem">
-									<object class="wxListBox" name="ID_LSTLOG" variable="m_pLstLog" member="yes">
-										<default>-1</default>
+									<object class="wxTextCtrl" name="ID_TXTLOG" variable="m_pTxtLog" member="yes">
+										<style>wxTE_MULTILINE|wxTE_READONLY</style>
 									</object>
 									<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+									<border>5</border>
 									<option>1</option>
 								</object>
 							</object>
@@ -178,7 +179,12 @@
 				<label>Device</label>
 				<object class="wxMenu" name="ID_MENUITEM_PROFILE" variable="m_pMenuProfile" member="yes">
 					<label>Profile</label>
-					<object class="break" />
+					<object class="wxMenuItem" name="ID_MENUITEM_SAVEPROFILE" variable="m_pMenuitemSaveProfile" member="yes">
+						<label>Save current profile</label>
+						<accel>Shift+Ctrl+S</accel>
+						<help>Saves the current profile with new name</help>
+						<handler function="OnMenuitemSaveProfileSelected" entry="EVT_MENU" />
+					</object>
 				</object>
 				<object class="wxMenu" name="ID_MENUITEM_MCU" variable="m_pMenuMcu" member="yes">
 					<label>MCU</label>
@@ -194,6 +200,16 @@
 					<help>Enable the serial port on the MCU</help>
 					<handler function="OnMenuitemSerialSelected" entry="EVT_MENU" />
 					<checkable>1</checkable>
+				</object>
+				<object class="wxMenuItem" name="ID_MENUITEM_VCD" variable="m_pMenuitemVcd" member="yes">
+					<label>Enable VCD logging</label>
+					<handler function="OnMenuitemVcdSelected" entry="EVT_MENU" />
+					<checkable>1</checkable>
+				</object>
+				<object class="wxMenuItem" name="ID_MENUITEM_VCDFILE" variable="m_pMenuitemVcdFile" member="yes">
+					<label>Select VCD log file</label>
+					<help>Selects the file to log VCD traces to</help>
+					<handler function="OnMenuitemVcdFileSelected" entry="EVT_MENU" />
 				</object>
 			</object>
 			<object class="wxMenu" variable="Menu3" member="yes">
@@ -232,6 +248,12 @@
 					<label>Log to file</label>
 					<help>Record log entries to file</help>
 					<handler function="OnMenuitemLogToFileSelected" entry="EVT_MENU" />
+					<checkable>1</checkable>
+				</object>
+				<object class="wxMenuItem" name="ID_MENUITEM_LOGVERBOSE" variable="m_pMenuitemLogVerbose" member="yes">
+					<label>Verbose</label>
+					<help>Enable verbose logging</help>
+					<handler function="OnMenuitemLogVerboseSelected" entry="EVT_MENU" />
 					<checkable>1</checkable>
 				</object>
 			</object>

@@ -54,8 +54,11 @@
 		</Linker>
 		<Unit filename="include/mainframe.h" />
 		<Unit filename="include/wxsimavrguiapp.h" />
+		<Unit filename="src/profiledialog.cpp" />
+		<Unit filename="include/profiledialog.h" />
 		<Unit filename="src/mainframe.cpp" />
 		<Unit filename="src/wxsimavrguiapp.cpp" />
+		<Unit filename="wxsmith/ProfileDialog.wxs" />
 		<Unit filename="wxsmith/mainFrame.wxs" />
 		<Extensions>
 			<code_completion />
@@ -63,7 +66,8 @@
 			<wxsmith version="1">
 				<gui name="wxWidgets" src="src/wxSimAVRGuiApp.cpp" main="wxSimAVRGuiFrame" init_handlers="necessary" language="CPP" />
 				<resources>
-					<wxFrame wxs="wxsmith/mainFrame.wxs" src="mainframe.cpp" hdr="mainframe.h" fwddecl="0" i18n="1" name="mainFrame" language="CPP" />
+					<wxFrame wxs="wxsmith/mainFrame.wxs" src="src/mainframe.cpp" hdr="include/mainframe.h" fwddecl="0" i18n="1" name="mainFrame" language="CPP" />
+					<wxDialog wxs="wxsmith/ProfileDialog.wxs" src="src/profiledialog.cpp" hdr="include/profiledialog.h" fwddecl="0" i18n="1" name="ProfileDialog" language="CPP" />
 				</resources>
 			</wxsmith>
 			<debugger />
