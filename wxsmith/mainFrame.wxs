@@ -10,6 +10,7 @@
 						<object class="wxAuiToolBarItem" name="ID_TOOLBARITEM_START" variable="m_pToolbaritemStart" member="yes">
 							<bitmap code="play_xpm" />
 							<shorthelp>Start simulator</shorthelp>
+							<handler function="OnMenuitemMcuStart" entry="EVT_TOOL" />
 						</object>
 						<label>Start</label>
 					</object>
@@ -17,6 +18,7 @@
 						<object class="wxAuiToolBarItem" name="ID_TOOLBARITEM_PAUSE" variable="m_pToolbaritemPause" member="yes">
 							<bitmap code="pause_xpm" />
 							<shorthelp>Pause simulator</shorthelp>
+							<handler function="OnMenuitemMcuPause" entry="EVT_TOOL" />
 						</object>
 						<label>Pause</label>
 					</object>
@@ -24,6 +26,7 @@
 						<object class="wxAuiToolBarItem" name="ID_TOOLBARITEM_STOP" variable="m_pToolbaritemStop" member="yes">
 							<bitmap code="stop_xpm" />
 							<shorthelp>Stop simulator</shorthelp>
+							<handler function="OnMenuitemMcuStop" entry="EVT_TOOL" />
 						</object>
 						<label>Stop</label>
 					</object>
@@ -31,6 +34,7 @@
 						<object class="wxAuiToolBarItem" name="ID_TOOLBARITEM_RESET" variable="m_pToolbaritemReset" member="yes">
 							<bitmap code="reset_xpm" />
 							<shorthelp>Reset MCU</shorthelp>
+							<handler function="OnMenuitemMcuReset" entry="EVT_TOOL" />
 						</object>
 						<label>Reset</label>
 					</object>

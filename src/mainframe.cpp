@@ -182,6 +182,10 @@ mainFrame::mainFrame(wxWindow* parent,wxWindowID id,const wxPoint& pos,const wxS
 	m_pStatusBar->SetStatusStyles(3,__wxStatusBarStyles_1);
 	SetStatusBar(m_pStatusBar);
 
+	Connect(ID_TOOLBARITEM_START,wxEVT_COMMAND_TOOL_CLICKED,(wxObjectEventFunction)&mainFrame::OnMenuitemMcuStart);
+	Connect(ID_TOOLBARITEM_PAUSE,wxEVT_COMMAND_TOOL_CLICKED,(wxObjectEventFunction)&mainFrame::OnMenuitemMcuPause);
+	Connect(ID_TOOLBARITEM_STOP,wxEVT_COMMAND_TOOL_CLICKED,(wxObjectEventFunction)&mainFrame::OnMenuitemMcuStop);
+	Connect(ID_TOOLBARITEM_RESET,wxEVT_COMMAND_TOOL_CLICKED,(wxObjectEventFunction)&mainFrame::OnMenuitemMcuReset);
 	Connect(ID_SPNFREQ,wxEVT_COMMAND_SPINCTRL_UPDATED,(wxObjectEventFunction)&mainFrame::OnSpnFreqChange);
 	Connect(ID_MENUITEM_FIRMWARE,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&mainFrame::OnMenuitemFirmwareSelected);
 	Connect(ID_MENUITEM_CODE,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&mainFrame::OnMenuitemCodeSelected);
