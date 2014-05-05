@@ -31,6 +31,12 @@ const long mainFrame::ID_TOOLBAR_CONTROL = wxNewId();
 const long mainFrame::ID_LBLDEVICETYPE = wxNewId();
 const long mainFrame::ID_LBLFREQUENCY = wxNewId();
 const long mainFrame::ID_SPNFREQ = wxNewId();
+const long mainFrame::ID_STATICTEXT1 = wxNewId();
+const long mainFrame::ID_GAUGEPROGMEM = wxNewId();
+const long mainFrame::ID_LBLPROGMEM = wxNewId();
+const long mainFrame::ID_STATICTEXT2 = wxNewId();
+const long mainFrame::ID_GUAGESRAM = wxNewId();
+const long mainFrame::ID_STATICTEXT3 = wxNewId();
 const long mainFrame::ID_TXTLOG = wxNewId();
 const long mainFrame::ID_PNLMAIN = wxNewId();
 const long mainFrame::ID_MENUITEM_FIRMWARE = wxNewId();
@@ -64,7 +70,7 @@ BEGIN_EVENT_TABLE(mainFrame,wxFrame)
 END_EVENT_TABLE()
 
 mainFrame::mainFrame(wxWindow* parent,wxWindowID id,const wxPoint& pos,const wxSize& size) :
-    m_pDeviceType(NULL),
+    m_sDeviceType(wxEmptyString),
     m_lFrequency(16000000),
     m_nLogMax(1000),
     m_bScrollLock(false),
@@ -80,8 +86,10 @@ mainFrame::mainFrame(wxWindow* parent,wxWindowID id,const wxPoint& pos,const wxS
 	wxFlexGridSizer* FlexGridSizer1;
 	wxFlexGridSizer* FlexGridSizer2;
 	wxMenu* Menu1;
+	wxFlexGridSizer* FlexGridSizer4;
 	wxStaticText* StaticText1;
 	wxFlexGridSizer* FlexGridSizer3;
+	wxStaticText* StaticText6;
 	wxMenu* Menu2;
 
 	Create(parent, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("wxID_ANY"));
@@ -96,9 +104,9 @@ mainFrame::mainFrame(wxWindow* parent,wxWindowID id,const wxPoint& pos,const wxS
 	m_pPnlMain = new wxPanel(this, ID_PNLMAIN, wxPoint(172,246), wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PNLMAIN"));
 	FlexGridSizer1 = new wxFlexGridSizer(0, 1, 0, 0);
 	FlexGridSizer1->AddGrowableCol(0);
-	FlexGridSizer1->AddGrowableRow(1);
+	FlexGridSizer1->AddGrowableRow(2);
 	FlexGridSizer3 = new wxFlexGridSizer(0, 0, 0, 0);
-	FlexGridSizer3->AddGrowableCol(4);
+	FlexGridSizer3->AddGrowableCol(6);
 	StaticText1 = new wxStaticText(m_pPnlMain, wxID_ANY, _("MCU"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("wxID_ANY"));
 	FlexGridSizer3->Add(StaticText1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	m_pLblDeviceType = new wxStaticText(m_pPnlMain, ID_LBLDEVICETYPE, _("-"), wxDefaultPosition, wxSize(100,17), wxALIGN_CENTRE, _T("ID_LBLDEVICETYPE"));
@@ -109,8 +117,27 @@ mainFrame::mainFrame(wxWindow* parent,wxWindowID id,const wxPoint& pos,const wxS
 	m_pSpnFreq = new wxSpinCtrl(m_pPnlMain, ID_SPNFREQ, _T("0"), wxDefaultPosition, wxDefaultSize, 0, 0, 99999999, 0, _T("ID_SPNFREQ"));
 	m_pSpnFreq->SetValue(_T("0"));
 	FlexGridSizer3->Add(m_pSpnFreq, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	StaticText6 = new wxStaticText(m_pPnlMain, wxID_ANY, _("EEPROM"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("wxID_ANY"));
+	FlexGridSizer3->Add(StaticText6, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	m_pLblEeprom = new wxStaticText(m_pPnlMain, wxID_ANY, _("-"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("wxID_ANY"));
+	FlexGridSizer3->Add(m_pLblEeprom, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	FlexGridSizer3->Add(-1,-1,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	FlexGridSizer1->Add(FlexGridSizer3, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	FlexGridSizer4 = new wxFlexGridSizer(0, 3, 0, 0);
+	FlexGridSizer4->AddGrowableCol(1);
+	StaticText2 = new wxStaticText(m_pPnlMain, ID_STATICTEXT1, _("Program Memory"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT1"));
+	FlexGridSizer4->Add(StaticText2, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	m_pGaugeProgMem = new wxGauge(m_pPnlMain, ID_GAUGEPROGMEM, 100, wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_GAUGEPROGMEM"));
+	FlexGridSizer4->Add(m_pGaugeProgMem, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	m_pLblProgMem = new wxStaticText(m_pPnlMain, ID_LBLPROGMEM, _("00000/00000"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_LBLPROGMEM"));
+	FlexGridSizer4->Add(m_pLblProgMem, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	StaticText3 = new wxStaticText(m_pPnlMain, ID_STATICTEXT2, _("SRAM"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT2"));
+	FlexGridSizer4->Add(StaticText3, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	m_pGaugeSram = new wxGauge(m_pPnlMain, ID_GUAGESRAM, 100, wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_GUAGESRAM"));
+	FlexGridSizer4->Add(m_pGaugeSram, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	StaticText4 = new wxStaticText(m_pPnlMain, ID_STATICTEXT3, _("00000/00000"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT3"));
+	FlexGridSizer4->Add(StaticText4, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	FlexGridSizer1->Add(FlexGridSizer4, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	FlexGridSizer2 = new wxFlexGridSizer(0, 1, 0, 0);
 	FlexGridSizer2->AddGrowableCol(0);
 	FlexGridSizer2->AddGrowableRow(0);
@@ -220,17 +247,14 @@ mainFrame::mainFrame(wxWindow* parent,wxWindowID id,const wxPoint& pos,const wxS
     if(wxGetEnv("HOME", &sTmp))
         m_pFnConfig = new wxFileName(sTmp + "/.config/riban/wxsimavr/config.cfg");
 
-    ReadConfig();
-    m_pSpnFreq->SetValue(m_lFrequency);
-    int nId = m_pMenuDevice->FindItem(m_pDeviceType->name);
-    if(wxNOT_FOUND != nId)
+    if(!ReadConfig())
     {
-        //Select MCU device type
-        wxCommandEvent event(0, wxEVT_COMMAND_MENU_SELECTED);
-        event.SetId(nId);
-        OnMenuDeviceType(event);
-        m_pMenuDevice->Check(nId, true);
+        wxMessageBox("Error reading configuration file. Closing...");
+        Close();
+        return;
     }
+    m_pSpnFreq->SetValue(m_lFrequency);
+    SetDeviceType(m_sDeviceType);
     m_bInit = true;
     wxLogDebug("mainFrame completed constructor\n");
 }
@@ -262,36 +286,29 @@ void mainFrame::OnClose(wxCloseEvent &event)
     WriteConfig();
     if(m_pAvr)
     {
-        if(m_pAvr->Delete() != wxTHREAD_NO_ERROR )
-            wxLogError(wxT("Can't delete the thread!"));
-        else
-            m_pAvr = NULL;
+        m_pAvr->Delete();
+        m_pAvr = NULL;
     }
-    for(std::map<long,avrDevice*>::iterator it = m_mDevices.begin(); it != m_mDevices.end(); it++)
-        delete it->second;
     Destroy();
 }
 
 void mainFrame::OnAbout(wxCommandEvent& event)
 {
-    for(std::map<long,avrDevice*>::iterator it = m_mDevices.begin(); it != m_mDevices.end(); it++)
-        wxLogVerbose("MCU device type id=%ld, name='%s'", it->second->id, it->second->name);
     wxMessageBox("wxSimAVRGui - Brian Walton\n(C) riban 2014", "About");
+    if(m_pAvr)
+    {
+        wxLogMessage("AVR type: %s", m_pAvr->GetMcuType());
+        wxLogMessage("Flash size: %d", m_pAvr->GetFlashSize());
+        wxLogMessage("SRAM size: %d", m_pAvr->GetSramSize());
+        wxLogMessage("EEPROM size: %d", m_pAvr->GetEepromSize());
+    }
 }
 
 void mainFrame::OnMenuitemMcuStart(wxCommandEvent& event)
 {
     wxLogDebug("__FUNCTION__");
-    if(!m_pDeviceType)
-        return; //No device type selected
     if(!m_pAvr)
-    {
-        //Create instance of the wxAvr thread
-        m_pAvr = new wxAvr(this, m_pDeviceType->name, m_lFrequency);
-        if(!m_pAvr)
-            return; //Just in case the creation fails
-        m_pAvr->Create();
-    }
+        return; //No device type selected
 
     switch(m_pAvr->GetStatus())
     {
@@ -304,10 +321,6 @@ void mainFrame::OnMenuitemMcuStart(wxCommandEvent& event)
         case AVR_STATUS_DONE:
         case AVR_STATUS_STOPPED:
         default:
-            if(m_pFnFirmware)
-                m_pAvr->LoadFirmware(m_pFnFirmware->GetFullPath());
-            if(m_pFnHex)
-                m_pAvr->LoadHex(m_pFnHex->GetFullPath());
             if(m_bSerialEnabled)
             {
                 m_pAvr->StartUart('0');
@@ -322,15 +335,13 @@ void mainFrame::OnMenuitemMcuStart(wxCommandEvent& event)
             }
             if(m_pAvr->IsPaused())
             {
-                m_pAvr->Reset();
+//                m_pAvr->Reset();
                 if(wxTHREAD_NO_ERROR != m_pAvr->Resume())
                     wxLogError(wxT("Can't resume thread!"));
             }
             else if(wxTHREAD_NO_ERROR != m_pAvr->Run())
             {
-                wxLogError(wxT("Can't create the thread! Error"));
-                m_pAvr->Delete();
-                m_pAvr = NULL;
+                wxLogError(wxT("Can't run the thread! Error"));
                 return;
             }
     }
@@ -446,14 +457,7 @@ void mainFrame::OnMenuitemMcuReset(wxCommandEvent& event)
 
 void mainFrame::OnMenuDeviceType(wxCommandEvent& event)
 {
-    std::map<long,avrDevice*>::iterator it = m_mDevices.find(event.GetId());
-    if(it == m_mDevices.end())
-        return;
-    avrDevice* pDevice = it->second;
-    if(!pDevice)
-        return;
-    m_pDeviceType = pDevice;
-    m_pLblDeviceType->SetLabel(pDevice->name);
+    SetDeviceType(m_mDevices[event.GetId()]);
 }
 
 void mainFrame::OnMenuProfile(wxCommandEvent& event)
@@ -461,38 +465,31 @@ void mainFrame::OnMenuProfile(wxCommandEvent& event)
     avrProfile* pProfile = m_mProfiles[event.GetId()];
     if(!pProfile)
         return;
-    if(!pProfile->pDevice)
+    if(pProfile->sDevice.IsEmpty())
         return;
-    m_pDeviceType = pProfile->pDevice;
-    m_pLblDeviceType->SetLabel(m_pDeviceType->name);
     m_lFrequency = pProfile->lFrequency;
     m_pSpnFreq->SetValue(m_lFrequency);
+    SetDeviceType(pProfile->sDevice);
 }
 
-void mainFrame::ReadConfig()
+bool mainFrame::ReadConfig()
 {
     if(!m_pFnConfig)
-        return; //Configuration path not configured
+        return false; //Configuration path not configured
     wxString sGroup, sTmp;
     long lCookie;
 
     //Populate map of MCU types
-    wxConfig* pConfig = new wxConfig("wxSimAVRGui", "riban", m_pFnConfig->GetPath() + "/mcu.cfg");
-    bool bMore = pConfig->GetFirstGroup(sGroup, lCookie);
-    while(bMore)
-    {
-        AddDeviceType(sGroup, pConfig->Read(sGroup + "/description", wxEmptyString));
-        bMore = pConfig->GetNextGroup(sGroup, lCookie);
-    }
-    delete pConfig;
+    unsigned int nMcuIndex = 0;
+    while(AddDeviceType(wxAvr::GetMcuNames(nMcuIndex++)));
+    wxLogMessage("%d MCU core types supported", nMcuIndex - 1);
 
-    //Create a default MCU type if non configured
     if(0 == m_mDevices.size())
-        AddDeviceType("atmega328", "AVR ATmega328 - 8 bit, 32MB Flash, 2MB RAM");
+        return false; //No supported device types
 
     //Populate map of profiles
-    pConfig = new wxConfig("wxSimAVRGui", "riban", m_pFnConfig->GetPath() + "/profile.cfg");
-    bMore = pConfig->GetFirstGroup(sGroup, lCookie);
+    wxConfig* pConfig = new wxConfig("wxSimAVRGui", "riban", m_pFnConfig->GetPath() + "/profile.cfg");
+    bool bMore = pConfig->GetFirstGroup(sGroup, lCookie);
     while(bMore)
     {
         wxString sName, sDeviceType, sTitle, sDescription;
@@ -509,19 +506,18 @@ void mainFrame::ReadConfig()
 
     //Read application configuration
     pConfig = new wxConfig("wxSimAVRGui", "riban", m_pFnConfig->GetPath() + ("/config.cfg"));
-    pConfig->Read("/state/mcu", &sTmp, wxEmptyString);
-    m_pDeviceType = GetDeviceTypeByDeviceName(sTmp);
-    if(!m_pDeviceType)
+    pConfig->Read("/state/mcu", &m_sDeviceType, "test");
+    if(m_sDeviceType.IsEmpty())
     {
-        std::map<long,avrDevice*>::iterator it = m_mDevices.begin();
-        m_pDeviceType = it->second; //This exists because it is specifically created above if m_pDeviceType is empty
-        wxLogMessage("MCU device type not configured - using first defined (%s)", m_pDeviceType->name);
+        std::map<long,wxString>::iterator it = m_mDevices.begin();
+        m_sDeviceType = it->second; //This exists because it is specifically created above if m_pDeviceType is empty
+        wxLogMessage("MCU device type not configured - using first defined (%s)", m_sDeviceType);
     }
     pConfig->Read("/state/frequency", &m_lFrequency);
     if(pConfig->Read("/state/firmware", &sTmp))
         m_pFnFirmware = new wxFileName(sTmp);
     if(pConfig->Read("/state/ihex", &sTmp))
-        m_pFnHex= new wxFileName(sTmp);
+        m_pFnHex = new wxFileName(sTmp);
     pConfig->Read("/state/serial", &m_bSerialEnabled, false);
     pConfig->Read("/state/vcdfile", &sTmp, "wxSimAVR.vcd");
     m_pFnVcd = new wxFileName(sTmp);
@@ -562,6 +558,7 @@ void mainFrame::ReadConfig()
 	m_pMenuitemLogVerbose->Check(bTmp);
 
     delete pConfig;
+    return true;
 }
 
 void mainFrame::WriteConfig()
@@ -580,8 +577,8 @@ void mainFrame::WriteConfig()
     }
 
     wxConfig* pConfig = new wxConfig("wxSimAVRGui", "riban", m_pFnConfig->GetPath() + "/config.cfg");
-    if(m_pDeviceType)
-        pConfig->Write("/state/mcu", m_pDeviceType->name);
+    if(!m_sDeviceType.IsEmpty())
+        pConfig->Write("/state/mcu", m_sDeviceType);
     pConfig->Write("/state/frequency", m_lFrequency);
     if(m_pFnFirmware)
         pConfig->Write("/state/firmware", m_pFnFirmware->GetFullPath());
@@ -619,7 +616,7 @@ void mainFrame::WriteConfig()
         avrProfile* pProfile = it->second;
         pConfig->Write(pProfile->name + "/description", pProfile->description);
         pConfig->Write(pProfile->name + "/frequency", pProfile->lFrequency);
-        pConfig->Write(pProfile->name + "/device", pProfile->pDevice->name);
+        pConfig->Write(pProfile->name + "/device", pProfile->sDevice);
     }
     delete pConfig;
 }
@@ -642,6 +639,10 @@ void mainFrame::HandleAvrWrite(wxCommandEvent &event)
 
 void mainFrame::OnMenuitemFirmwareSelected(wxCommandEvent& event)
 {
+    wxLogError("Firmware not yet supported");
+    return;
+    //!@todo review firmware code
+
     wxString sPath, sFile;
     if(m_pFnFirmware)
     {
@@ -673,6 +674,8 @@ void mainFrame::OnMenuitemCodeSelected(wxCommandEvent& event)
 {
     wxLogMessage("Load Code not implemented");
     return;
+    //!@todo review load code
+
     wxFileDialog dlg(this, "Select code file");
     int nResult = dlg.ShowModal();
     if(nResult != wxID_OK)
@@ -703,6 +706,7 @@ void mainFrame::OnMenuitemLoadHexSelected(wxCommandEvent& event)
     int nResult = dlg.ShowModal();
     if(nResult != wxID_OK)
         return;
+
     if(m_pFnHex)
         delete m_pFnHex;
 
@@ -714,7 +718,7 @@ void mainFrame::OnMenuitemLoadHexSelected(wxCommandEvent& event)
         return;
     }
     if(m_pAvr && !m_pAvr->IsRunning())
-        m_pAvr->LoadHex(m_pFnHex->GetPath());
+        LoadHex(m_pFnHex->GetFullPath());
 }
 
 void mainFrame::OnMenuitemWipeSelected(wxCommandEvent& event)
@@ -727,8 +731,9 @@ void mainFrame::OnMenuitemWipeSelected(wxCommandEvent& event)
     m_pFnFirmware = NULL;
     delete m_pFnHex;
     m_pFnHex = NULL;
+    LoadHex(wxEmptyString);
     if(m_pAvr)
-        m_pAvr->Init();
+        m_pAvr->Init(); //!@todo This is causing tight loop beacuse avr_ioctl ports link circularly
     wxLogMessage("Wiping MCU");
 }
 
@@ -807,26 +812,24 @@ void mainFrame::OnMenuitemVcdSelected(wxCommandEvent& event)
 
 void mainFrame::OnMenuitemSaveProfileSelected(wxCommandEvent& event)
 {
-    if(!m_pDeviceType)
+    if(m_sDeviceType.IsEmpty())
     {
         wxLogMessage("Can't create profile when MCU not defined");
         return;
     }
     ProfileDialog dlg(this);
-    dlg.SetProfileName(m_pDeviceType->name);
-    dlg.SetDescription(m_pDeviceType->description);
+    dlg.SetProfileName(m_sDeviceType);
     dlg.SetFrequency(m_lFrequency);
-    for(std::map<long,avrDevice*>::iterator it = m_mDevices.begin(); it != m_mDevices.end(); it++) //!@todo last iteration of this is crashing app!!!<<<***
-        dlg.AddMcu(it->second->name);
-    dlg.SetDeviceType(m_pDeviceType->name);
+    for(std::map<long,wxString>::iterator it = m_mDevices.begin(); it != m_mDevices.end(); it++)
+        dlg.AddMcu(it->second);
+    dlg.SetDeviceType(m_sDeviceType);
 
     if(dlg.ShowModal() == wxID_OK)
     {
         wxString sName = dlg.GetProfileName();
-        avrDevice* pDevice = GetDeviceTypeByDeviceName(dlg.GetDeviceType());
-        if(!pDevice)
+        wxString sDeviceType = dlg.GetDeviceType();
+        if(sDeviceType.IsEmpty())
             return;
-        wxString sDeviceType = pDevice->name;
         long lFrequency = dlg.GetFrequency();
         wxString sTitle = dlg.GetTitle();
         wxString sDescription = dlg.GetDescription();
@@ -835,7 +838,7 @@ void mainFrame::OnMenuitemSaveProfileSelected(wxCommandEvent& event)
     }
 }
 
-avrProfile* mainFrame::AddProfile(const wxString& sName, const wxString& sDeviceType, long lFrequency, const wxString& sTitle, const wxString& sDescription)
+avrProfile* mainFrame::AddProfile(wxString sName, wxString sDeviceType, long lFrequency, wxString sTitle, wxString sDescription)
 {
     if(sName.IsEmpty())
     {
@@ -857,12 +860,8 @@ avrProfile* mainFrame::AddProfile(const wxString& sName, const wxString& sDevice
            return NULL;
     }
 
-    avrDevice* pDevice = GetDeviceTypeByDeviceName(sDeviceType);
-    if(!pDevice)
-        return NULL; //There is no device of that type defined
-
     avrProfile* pProfile = new avrProfile;
-    pProfile->pDevice = pDevice;
+    pProfile->sDevice = sDeviceType;
     pProfile->id = wxNewId();
     if(sTitle.IsEmpty())
         pProfile->name = sName;
@@ -874,55 +873,91 @@ avrProfile* mainFrame::AddProfile(const wxString& sName, const wxString& sDevice
     m_mProfiles[pProfile->id] = (pProfile);
     m_pMenuProfile->Append(new wxMenuItem(m_pMenuProfile, pProfile->id, pProfile->name, pProfile->description, wxITEM_NORMAL));
     Connect(pProfile->id, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&mainFrame::OnMenuProfile);
-//    Connect(pProfile->id, wxEVT_ANY, (wxObjectEventFunction)&mainFrame::ShowProfileContext);
-    //!@todo Add context menu to remove or replace profiles - don't know if you can have context menu drivern from menu item
     return pProfile;
 }
 
-avrDevice* mainFrame::GetDeviceTypeByDeviceName(const wxString& sName)
+long mainFrame::GetDeviceID(wxString sName)
 {
-    for(std::map<long,avrDevice*>::iterator it = m_mDevices.begin(); it != m_mDevices.end(); it++)
+    for(std::map<long,wxString>::iterator it = m_mDevices.begin(); it != m_mDevices.end(); it++)
     {
-        if(it->second->name == sName)
-            return it->second;
+        if(it->second == sName)
+            return it->first;
     }
-    return NULL;
+    return 0;
 }
 
-avrDevice* mainFrame::AddDeviceType(const wxString& sName, const wxString& sDescription)
+long mainFrame::AddDeviceType(const wxArrayString& asNames)
 {
-    avrDevice* pDevice = GetDeviceTypeByDeviceName(sName);
-    if(!pDevice)
-        pDevice = new avrDevice(wxNewId(), sName, sDescription);
-    pDevice->name = sName;
-    pDevice->description = sDescription;
-    m_mDevices[pDevice->id] = pDevice;
-    m_pMenuMcu->Append(new wxMenuItem(m_pMenuMcu, pDevice->id, pDevice->name, pDevice->description, wxITEM_RADIO));
-    Connect(pDevice->id, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&mainFrame::OnMenuDeviceType);
-    return pDevice;
-}
+    if(asNames.GetCount() == 0)
+        return 0;
 
-void mainFrame::OnMenuitemProfileContext(wxCommandEvent& event)
-{
-    //!@todo This does nothing (yet)
-    wxLogMessage("Context menu");
-}
+    wxString sMenuTitle = asNames[0];
+    for(unsigned int nIndex = 1; nIndex < asNames.Count(); ++nIndex)
+        sMenuTitle = sMenuTitle + " / " + asNames[nIndex];
 
-void mainFrame::ShowProfileContext(wxCommandEvent& event)
-{
-    //!@todo This does nothing (yet)
-    wxLogMessage("ShowMcuContext");
-    wxMenu menuContext;
-    new wxMenuItem(&menuContext, ID_MENUITEM_DELETEPROFILE, "Delete", "Delete this MCU type");
-    new wxMenuItem(&menuContext, ID_MENUITEM_RENAMEPROFILE, "Rename", "Rename this MCU type");
-    new wxMenuItem(&menuContext, ID_MENUITEM_NEWPROFILE, "New", "Create new MCU type");
-    Connect(ID_MENUITEM_DELETEPROFILE, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&mainFrame::OnMenuitemProfileContext);
-    Connect(ID_MENUITEM_RENAMEPROFILE, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&mainFrame::OnMenuitemProfileContext);
-    Connect(ID_MENUITEM_NEWPROFILE, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&mainFrame::OnMenuitemProfileContext);
-    PopupMenu(&menuContext);
+    long lId = GetDeviceID(asNames[0]);
+
+    if(!lId)
+        lId = wxNewId();
+    m_mDevices[lId] = asNames[0];
+    m_pMenuMcu->Append(new wxMenuItem(m_pMenuMcu, lId, sMenuTitle, wxEmptyString, wxITEM_RADIO));
+    Connect(lId, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&mainFrame::OnMenuDeviceType);
+    return lId;
 }
 
 void mainFrame::OnMenuitemLogVerboseSelected(wxCommandEvent& event)
 {
     wxLog::SetVerbose(event.IsChecked());
+}
+
+bool mainFrame::SetDeviceType(wxString sDeviceType)
+{
+    if(!GetDeviceID(sDeviceType))
+        return false;
+    if(m_pAvr)
+        m_pAvr->Delete();
+    m_pAvr = NULL;
+    m_sDeviceType = wxEmptyString;
+    m_pLblDeviceType->SetLabel(m_sDeviceType);
+    if(sDeviceType.IsEmpty())
+        return false;
+
+    m_pAvr = new wxAvr(this, sDeviceType, m_lFrequency);
+    if(!m_pAvr)
+        return false;
+    if(m_pAvr->Create() != wxTHREAD_NO_ERROR)
+        return false;
+    m_sDeviceType = sDeviceType;
+    m_pLblDeviceType->SetLabel(m_sDeviceType);
+    long lId = GetDeviceID(sDeviceType);
+    m_pMenuDevice->Check(lId, true);
+    m_pLblEeprom->SetLabel(wxString::Format("%d", m_pAvr->GetEepromSize()));
+
+    if(m_pFnHex)
+        LoadHex(m_pFnHex->GetFullPath());
+
+    return true;
+}
+
+void mainFrame::LoadHex(wxString sFilename)
+{
+    if(m_pAvr && wxFileExists(sFilename))
+    {
+        int nProgmem;
+        nProgmem = m_pAvr->LoadHex(sFilename);
+        if(nProgmem)
+        {
+            wxLogMessage("Loaded hex file %s", sFilename);
+            int nPercent = 100 * nProgmem / m_pAvr->GetFlashSize();
+            if(nPercent > 100)
+                nPercent = 100;
+            m_pGaugeProgMem->SetValue(nPercent);
+            m_pLblProgMem->SetLabel(wxString::Format("%d/%d", nProgmem, m_pAvr->GetFlashSize()));
+        }
+    }
+    else
+    {
+        m_pGaugeProgMem->SetValue(0);
+        m_pLblProgMem->SetLabel("00000/00000");
+    }
 }

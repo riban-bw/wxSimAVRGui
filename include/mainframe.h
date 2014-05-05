@@ -10,6 +10,7 @@
 #pragma once
 
 //(*Headers(mainFrame)
+#include <wx/gauge.h>
 #include <wx/spinctrl.h>
 #include <wx/sizer.h>
 #include <wx/menu.h>
@@ -23,17 +24,6 @@
 
 #include <map>
 
-/** Class represents a type of AVR device */
-class avrDevice
-{
-    public:
-        avrDevice(long lId, const wxString& sName, const wxString sDescription = wxEmptyString) : id(lId), name(sName), description(sDescription) {};
-        long id; //!< Unique ID used by application to identify device, e.g. as menu event id
-        wxString name; //!< Name of device
-//        wxString device; //!< Name of device used by simavr
-        wxString description; //!< Long description of device
-};
-
 /** Class represents a profile of AVR device */
 class avrProfile
 {
@@ -41,7 +31,7 @@ class avrProfile
         long id; //!< Unique ID used by application to identify profile, e.g. as menu event id
         wxString name; //!< Descriptive name of profile used in menus and logs
         wxString description; //!< Long description
-        avrDevice* pDevice; //!< Pointer to device type
+        wxString sDevice; //!< Name of device type
         long lFrequency; //!< Frequency of device
 };
 
@@ -67,11 +57,13 @@ class mainFrame: public wxFrame
 		wxAuiManager* m_pAuiManager;
 		wxMenuItem* m_pMenuitemLogVerbose;
 		wxMenu* m_pMenuDevice;
+		wxGauge* m_pGaugeProgMem;
 		wxSpinCtrl* m_pSpnFreq;
 		wxMenuItem* m_pMenuitemVcd;
 		wxStaticText* m_pLblDeviceType;
 		wxMenuBar* m_pMenubar;
 		wxMenuItem* m_pMenuitemLoadHex;
+		wxStaticText* m_pLblEeprom;
 		wxStatusBar* m_pStatusBar;
 		wxMenuItem* m_pMenuitemStop;
 		wxMenuItem* m_pMenuitemWipe;
@@ -82,8 +74,12 @@ class mainFrame: public wxFrame
 		wxPanel* m_pPnlMain;
 		wxMenu* m_pMenuLog;
 		wxMenuItem* m_pMenuitemStart;
+		wxStaticText* StaticText3;
 		wxMenuItem* m_pMenuitemQuit;
+		wxStaticText* m_pLblProgMem;
 		wxMenuItem* m_pMenuitemReset;
+		wxStaticText* StaticText4;
+		wxStaticText* StaticText2;
 		wxMenuItem* m_pMenuitemFirmware;
 		wxTextCtrl* m_pTxtLog;
 		wxMenuItem* m_pMenuitemSaveProfile;
@@ -93,6 +89,7 @@ class mainFrame: public wxFrame
 		wxMenuItem* m_pMenuitemPause;
 		wxAuiToolBar* m_pToolbarControl;
 		wxMenuItem* m_pMenuitemSerial;
+		wxGauge* m_pGaugeSram;
 		//*)
 
 	protected:
@@ -108,6 +105,12 @@ class mainFrame: public wxFrame
 		static const long ID_LBLDEVICETYPE;
 		static const long ID_LBLFREQUENCY;
 		static const long ID_SPNFREQ;
+		static const long ID_STATICTEXT1;
+		static const long ID_GAUGEPROGMEM;
+		static const long ID_LBLPROGMEM;
+		static const long ID_STATICTEXT2;
+		static const long ID_GUAGESRAM;
+		static const long ID_STATICTEXT3;
 		static const long ID_TXTLOG;
 		static const long ID_PNLMAIN;
 		static const long ID_MENUITEM_FIRMWARE;
@@ -164,8 +167,9 @@ class mainFrame: public wxFrame
         void Running(unsigned int nState);
 
         /** @brief  Read (load) configuration and persistent state
+        *   @return <i>bool</i> True on success
         */
-        void ReadConfig();
+        bool ReadConfig();
 
         /** @brief  Write (save) configuration and persistent state
         */
@@ -200,30 +204,34 @@ class mainFrame: public wxFrame
         *   @param  sDescription Long description of profile. Default is empty.
         *   @return <i>avrProfile*</i> Pointer to new profile or null if failed to create new profile
         */
-        avrProfile* AddProfile(const wxString& sName, const wxString& sDeviceType, long lFrequency = 8000000l, const wxString& sTitle = wxEmptyString, const wxString& sDescription = wxEmptyString);
+        avrProfile* AddProfile(wxString sName, wxString sDeviceType, long lFrequency = 8000000l, wxString sTitle = wxEmptyString, wxString sDescription = wxEmptyString);
 
-        /** @brief  Gets a pointer to an avr device type
+        /** @brief  Gets a id of avr device type
         *   @param  sName Name of the MCU device
-        *   @return <i>avrDevice*</i> Pointer to device or NULL if device type not found
+        *   @return <i>long</i> Device ID or 0 if device type not found
         */
-        avrDevice* GetDeviceTypeByDeviceName(const wxString& sName);
+        long GetDeviceID(wxString sName);
 
         /** @brief  Adds a device type to the map of device types
-        *   @param  sName MCU name
-        *   @param  sDescription Long description of MCU
-        *   @return <i>avrDevice*</i> Pointer to new device type
+        *   @param  asNames List of MCU names (aliases)
+        *   @return <i>long</i> ID of new device type
         */
-        avrDevice* AddDeviceType(const wxString& sName, const wxString& sDescription);
+        long AddDeviceType(const wxArrayString& asNames);
 
-        /** @brief  Handle MCU menu item context menu event
+        /** @brief  Set the current device type
+        *   @param  sDeviceType Name of the device type
+        *   @return <i>bool</i> True on success
         */
-        void OnMenuitemProfileContext(wxCommandEvent& event);
+        bool SetDeviceType(wxString sDeviceType);
 
-        void ShowProfileContext(wxCommandEvent& event);
+        /** @brief  Load Intel hex file
+        *   @param  sFilename Hex filename
+        */
+        void LoadHex(wxString sFilename);
 
-        std::map<long,avrDevice*> m_mDevices; //!< Map pointers to supported AVR device types, indexed by wxEvent ID
+        std::map<long,wxString> m_mDevices; //!< Map of supported AVR device types, indexed by wxEvent ID
         std::map<long,avrProfile*> m_mProfiles; //!< Map pointers to AVR profiles, indexed by wxEvent ID
-        avrDevice* m_pDeviceType; //!< Pointer to current device type
+        wxString m_sDeviceType; //!< Name of current device
         long m_lFrequency; //!< Frequency of device
         size_t m_nLogMax; //!< Maximum number of log entries to show
         bool m_bScrollLock; //!< True to disable automatic scrolling of log window when new message logged
@@ -237,6 +245,7 @@ class mainFrame: public wxFrame
         wxFileName* m_pFnConfig; //!< Pointer to name of configuration file. Also used for path to other configuration data.
         wxFileName* m_pFnVcd; //!< Pointer to name of VCD logging file.
         wxLogTextCtrl* m_pLog; //!< Directs log messages to display
+        wxArrayString m_asMcus; //!< List of available MCU cores
 
 		DECLARE_EVENT_TABLE()
 };
