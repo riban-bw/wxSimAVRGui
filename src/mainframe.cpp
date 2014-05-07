@@ -9,6 +9,7 @@
 #include <wx/stdstream.h>
 #include "wxsimavr.h"
 #include "profiledialog.h"
+#include "version.h"
 
 #include "images/play.xpm"
 #include "images/pause.xpm"
@@ -20,6 +21,7 @@
 #include <wx/intl.h>
 #include <wx/bitmap.h>
 #include <wx/image.h>
+#include <wx/artprov.h>
 //*)
 
 //(*IdInit(mainFrame)
@@ -28,6 +30,8 @@ const long mainFrame::ID_TOOLBARITEM_PAUSE = wxNewId();
 const long mainFrame::ID_TOOLBARITEM_STOP = wxNewId();
 const long mainFrame::ID_TOOLBARITEM_RESET = wxNewId();
 const long mainFrame::ID_TOOLBAR_CONTROL = wxNewId();
+const long mainFrame::ID_TOOLBARITEM_LOADHEX = wxNewId();
+const long mainFrame::ID_AUITOOL_FILE = wxNewId();
 const long mainFrame::ID_LBLDEVICETYPE = wxNewId();
 const long mainFrame::ID_LBLFREQUENCY = wxNewId();
 const long mainFrame::ID_SPNFREQ = wxNewId();
@@ -54,6 +58,9 @@ const long mainFrame::ID_MENUITEM_START = wxNewId();
 const long mainFrame::ID_MENUITEM_PAUSE = wxNewId();
 const long mainFrame::ID_MENUITEM_STOP = wxNewId();
 const long mainFrame::ID_MENUITEM_RESET = wxNewId();
+const long mainFrame::ID_MENUITEM_TOOLBARFILE = wxNewId();
+const long mainFrame::ID_MENUITEM_TOOLBARCONTROL = wxNewId();
+const long mainFrame::ID_MENUITEM_LAYOUT = wxNewId();
 const long mainFrame::ID_MENUITEM_LOGTOFILE = wxNewId();
 const long mainFrame::ID_MENUITEM_LOGVERBOSE = wxNewId();
 const long mainFrame::ID_MENUITEM_LOGMCU = wxNewId();
@@ -102,6 +109,10 @@ mainFrame::mainFrame(wxWindow* parent,wxWindowID id,const wxPoint& pos,const wxS
 	m_pToolbarControl->AddTool(ID_TOOLBARITEM_RESET, _("Reset"), reset_xpm, wxNullBitmap, wxITEM_NORMAL, _("Reset MCU"), wxEmptyString, NULL);
 	m_pToolbarControl->Realize();
 	m_pAuiManager->AddPane(m_pToolbarControl, wxAuiPaneInfo().Name(_T("ToolbarControl")).ToolbarPane().Caption(_("Toolbar")).CloseButton(false).Layer(10).Top().Gripper());
+	m_pToolbarFile = new wxAuiToolBar(this, ID_AUITOOL_FILE, wxDefaultPosition, wxDefaultSize, wxAUI_TB_DEFAULT_STYLE);
+	m_pToolbarFile->AddTool(ID_TOOLBARITEM_LOADHEX, _("Load Hex"), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FOLDER")),wxART_TOOLBAR), wxNullBitmap, wxITEM_NORMAL, _("Load Intel Hex File"), wxEmptyString, NULL);
+	m_pToolbarFile->Realize();
+	m_pAuiManager->AddPane(m_pToolbarFile, wxAuiPaneInfo().Name(_T("ToolbarFile")).ToolbarPane().Caption(_("File")).CloseButton(false).Layer(10).Top().Gripper());
 	m_pPnlMain = new wxPanel(this, ID_PNLMAIN, wxPoint(172,246), wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PNLMAIN"));
 	FlexGridSizer1 = new wxFlexGridSizer(0, 1, 0, 0);
 	FlexGridSizer1->AddGrowableCol(0);
@@ -192,6 +203,14 @@ mainFrame::mainFrame(wxWindow* parent,wxWindowID id,const wxPoint& pos,const wxS
 	m_pMenuitemReset->SetBitmap(reset_xpm);
 	Menu3->Append(m_pMenuitemReset);
 	m_pMenubar->Append(Menu3, _("Control"));
+	Menu4 = new wxMenu();
+	m_pMenuitemToolbarFile = new wxMenuItem(Menu4, ID_MENUITEM_TOOLBARFILE, _("Show file toobar"), _("Show or hide the file toolbar"), wxITEM_CHECK);
+	Menu4->Append(m_pMenuitemToolbarFile);
+	m_pMenuitemToolbarControl = new wxMenuItem(Menu4, ID_MENUITEM_TOOLBARCONTROL, _("Show control toolbar"), _("Shows or hides the control toolbar"), wxITEM_CHECK);
+	Menu4->Append(m_pMenuitemToolbarControl);
+	m_pMenuitemResetLayout = new wxMenuItem(Menu4, ID_MENUITEM_LAYOUT, _("Reset layout"), _("Resets the application interface"), wxITEM_NORMAL);
+	Menu4->Append(m_pMenuitemResetLayout);
+	m_pMenubar->Append(Menu4, _("View"));
 	m_pMenuLog = new wxMenu();
 	m_pMenuitemLogToFile = new wxMenuItem(m_pMenuLog, ID_MENUITEM_LOGTOFILE, _("Log to file"), _("Record log entries to file"), wxITEM_CHECK);
 	m_pMenuLog->Append(m_pMenuitemLogToFile);
@@ -216,6 +235,7 @@ mainFrame::mainFrame(wxWindow* parent,wxWindowID id,const wxPoint& pos,const wxS
 	Connect(ID_TOOLBARITEM_PAUSE,wxEVT_COMMAND_TOOL_CLICKED,(wxObjectEventFunction)&mainFrame::OnMenuitemMcuPause);
 	Connect(ID_TOOLBARITEM_STOP,wxEVT_COMMAND_TOOL_CLICKED,(wxObjectEventFunction)&mainFrame::OnMenuitemMcuStop);
 	Connect(ID_TOOLBARITEM_RESET,wxEVT_COMMAND_TOOL_CLICKED,(wxObjectEventFunction)&mainFrame::OnMenuitemMcuReset);
+	Connect(ID_TOOLBARITEM_LOADHEX,wxEVT_COMMAND_TOOL_CLICKED,(wxObjectEventFunction)&mainFrame::OnMenuitemLoadHexSelected);
 	Connect(ID_SPNFREQ,wxEVT_COMMAND_SPINCTRL_UPDATED,(wxObjectEventFunction)&mainFrame::OnSpnFreqChange);
 	Connect(ID_MENUITEM_FIRMWARE,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&mainFrame::OnMenuitemFirmwareSelected);
 	Connect(ID_MENUITEM_CODE,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&mainFrame::OnMenuitemCodeSelected);
@@ -230,6 +250,9 @@ mainFrame::mainFrame(wxWindow* parent,wxWindowID id,const wxPoint& pos,const wxS
 	Connect(ID_MENUITEM_PAUSE,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&mainFrame::OnMenuitemMcuPause);
 	Connect(ID_MENUITEM_STOP,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&mainFrame::OnMenuitemMcuStop);
 	Connect(ID_MENUITEM_RESET,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&mainFrame::OnMenuitemMcuReset);
+	Connect(ID_MENUITEM_TOOLBARFILE,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&mainFrame::OnMenuitemToolbarFileSelected);
+	Connect(ID_MENUITEM_TOOLBARCONTROL,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&mainFrame::OnMenuitemToolbarControlSelected);
+	Connect(ID_MENUITEM_LAYOUT,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&mainFrame::OnMenuitemResetLayoutSelected);
 	Connect(ID_MENUITEM_LOGTOFILE,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&mainFrame::OnMenuitemLogToFileSelected);
 	Connect(ID_MENUITEM_LOGVERBOSE,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&mainFrame::OnMenuitemLogVerboseSelected);
 	Connect(ID_MENUITEM_LOGMCU,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&mainFrame::OnMenuitemLogmcuSelected);
@@ -532,12 +555,20 @@ bool mainFrame::ReadConfig()
     }
     if(bCanSee)
         Move(nX, nY);
+    //AUI manager perspective (layout management)
+    wxString sPerspective;
+    if(pConfig->Read("/Layout/Perspective", &sPerspective, wxEmptyString))
+        m_pAuiManager->LoadPerspective(sPerspective);
+    m_pMenuitemToolbarControl->Check(m_pAuiManager->GetPane("ToolbarControl").IsShown());
+    m_pMenuitemToolbarFile->Check(m_pAuiManager->GetPane("ToolbarFile").IsShown());
+
 	bTmp = false;
 	pConfig->Read(wxT("/Log/File"), &bTmp, false);
 	EnableLogToFile(bTmp);
 	pConfig->Read(wxT("/Log/Verbose"), &bTmp, false);
 	wxLog::SetVerbose(bTmp);
 	m_pMenuitemLogVerbose->Check(bTmp);
+
 
     delete pConfig;
     return true;
@@ -586,6 +617,7 @@ void mainFrame::WriteConfig()
         pConfig->Write(wxT("/Layout/PosX"), GetPosition().x);
         pConfig->Write(wxT("/Layout/PosY"), GetPosition().y);
     }
+    pConfig->Write(_("/Layout/Perspective"), m_pAuiManager->SavePerspective());
     pConfig->Write(wxT("/Log/File"), (NULL != m_pFileLog));
 	pConfig->Write(wxT("/Log/Verbose"), wxLog::GetVerbose());
     delete pConfig;
@@ -686,7 +718,7 @@ void mainFrame::OnMenuitemLoadHexSelected(wxCommandEvent& event)
         sPath = m_pFnHex->GetPath();
         sFile = m_pFnHex->GetFullName();
     }
-    wxFileDialog dlg(this, "Select hex file", sPath, sFile, "Intel hex files (*.ihex *.hex)|*.ihex;*.hex|All files (*.*)|*.*");
+    wxFileDialog dlg(this, "Select hex file", sPath, sFile, "Intel hex files (*.ihex;*.hex)|*.ihex;*.hex|All files (*.*)|*.*");
     int nResult = dlg.ShowModal();
     if(nResult != wxID_OK)
         return;
@@ -956,7 +988,9 @@ void mainFrame::LoadHex(wxString sFilename)
 
 void mainFrame::OnAbout(wxCommandEvent& event)
 {
-    wxMessageBox("wxSimAVRGui - Brian Walton\n(C) riban 2014", "About");
+    wxString sMessage = wxString::Format("wxSimAVRGui - Brian Walton\n(C) riban 2014-%s\n\nVersion %ld.%ld.%ld", AutoVersion::YEAR, AutoVersion::MAJOR, AutoVersion::MINOR, AutoVersion::BUILD);
+    sMessage += wxString::Format("\n\nBuild date: %s/%s/%s", AutoVersion::DATE, AutoVersion::MONTH, AutoVersion::YEAR);
+    wxMessageBox(sMessage, "About");
 }
 
 void mainFrame::OnMenuitemLogmcuSelected(wxCommandEvent& event)
@@ -970,4 +1004,23 @@ void mainFrame::OnMenuitemLogmcuSelected(wxCommandEvent& event)
     }
     else
         wxLogMessage("No MCU configured");
+}
+
+void mainFrame::OnMenuitemToolbarControlSelected(wxCommandEvent& event)
+{
+    m_pAuiManager->GetPane("ToolbarControl").Show(event.IsChecked());
+	m_pAuiManager->Update();
+}
+
+void mainFrame::OnMenuitemToolbarFileSelected(wxCommandEvent& event)
+{
+    m_pAuiManager->GetPane("ToolbarFile").Show(event.IsChecked());
+	m_pAuiManager->Update();
+}
+
+void mainFrame::OnMenuitemResetLayoutSelected(wxCommandEvent& event)
+{
+    m_pAuiManager->LoadPerspective("layout2|name=ToolbarControl;caption=Toolbar;state=8956;dir=1;layer=10;row=0;pos=49;prop=100000;bestw=111;besth=26;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=ToolbarFile;caption=File;state=8956;dir=1;layer=10;row=0;pos=0;prop=100000;bestw=47;besth=34;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=840;floaty=160;floatw=-1;floath=-1|name=PanelMain;caption=Main Panel;state=768;dir=5;layer=0;row=0;pos=0;prop=100000;bestw=447;besth=192;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=0;floaty=0;floatw=0;floath=0|dock_size(1,10,0)=36|dock_size(5,0,0)=120|");
+    m_pMenuitemToolbarControl->Check(m_pAuiManager->GetPane("ToolbarControl").IsShown());
+    m_pMenuitemToolbarFile->Check(m_pAuiManager->GetPane("ToolbarFile").IsShown());
 }

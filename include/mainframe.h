@@ -76,7 +76,12 @@ class mainFrame: public wxFrame
 		wxMenu* m_pMenuLog;
 		wxMenuItem* m_pMenuitemStart;
 		wxStaticText* StaticText3;
+		wxMenuItem* m_pMenuitemToolbarFile;
 		wxMenuItem* m_pMenuitemQuit;
+		wxMenuItem* m_pMenuitemToolbarControl;
+		wxMenuItem* m_pMenuitemResetLayout;
+		wxAuiToolBar* m_pToolbarFile;
+		wxMenu* Menu4;
 		wxStaticText* m_pLblProgMem;
 		wxMenuItem* m_pMenuitemReset;
 		wxMenuItem* m_pMenuitemLogmcu;
@@ -103,6 +108,8 @@ class mainFrame: public wxFrame
 		static const long ID_TOOLBARITEM_STOP;
 		static const long ID_TOOLBARITEM_RESET;
 		static const long ID_TOOLBAR_CONTROL;
+		static const long ID_TOOLBARITEM_LOADHEX;
+		static const long ID_AUITOOL_FILE;
 		static const long ID_LBLDEVICETYPE;
 		static const long ID_LBLFREQUENCY;
 		static const long ID_SPNFREQ;
@@ -129,6 +136,9 @@ class mainFrame: public wxFrame
 		static const long ID_MENUITEM_PAUSE;
 		static const long ID_MENUITEM_STOP;
 		static const long ID_MENUITEM_RESET;
+		static const long ID_MENUITEM_TOOLBARFILE;
+		static const long ID_MENUITEM_TOOLBARCONTROL;
+		static const long ID_MENUITEM_LAYOUT;
 		static const long ID_MENUITEM_LOGTOFILE;
 		static const long ID_MENUITEM_LOGVERBOSE;
 		static const long ID_MENUITEM_LOGMCU;
@@ -162,6 +172,9 @@ class mainFrame: public wxFrame
 		void OnMenuitemSaveProfileSelected(wxCommandEvent& event);
 		void OnMenuitemLogVerboseSelected(wxCommandEvent& event);
 		void OnMenuitemLogmcuSelected(wxCommandEvent& event);
+		void OnMenuitemToolbarControlSelected(wxCommandEvent& event);
+		void OnMenuitemToolbarFileSelected(wxCommandEvent& event);
+		void OnMenuitemResetLayoutSelected(wxCommandEvent& event);
 		//*)
 
         /** @brief  Updates dispaly with current running state
