@@ -173,7 +173,7 @@
 									<option>1</option>
 								</object>
 								<object class="sizeritem">
-									<object class="wxStaticText" name="ID_STATICTEXT3" variable="StaticText4" member="yes">
+									<object class="wxStaticText" name="ID_LBLSRAM" variable="m_pLblSram" member="yes">
 										<label>00000/00000</label>
 									</object>
 									<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
@@ -334,6 +334,11 @@
 			</object>
 			<object class="wxMenu" variable="Menu2" member="no">
 				<label>Help</label>
+				<object class="wxMenuItem" name="ID_MENUITEM_LOGMCU" variable="m_pMenuitemLogmcu" member="yes">
+					<label>Log MCU details</label>
+					<help>Prints details of current MCU to log</help>
+					<handler function="OnMenuitemLogmcuSelected" entry="EVT_MENU" />
+				</object>
 				<object class="wxMenuItem" name="idMenuAbout" variable="MenuItem2" member="no">
 					<label>About</label>
 					<accel>F1</accel>

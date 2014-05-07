@@ -57,6 +57,7 @@ class mainFrame: public wxFrame
 		wxAuiManager* m_pAuiManager;
 		wxMenuItem* m_pMenuitemLogVerbose;
 		wxMenu* m_pMenuDevice;
+		wxStaticText* m_pLblSram;
 		wxGauge* m_pGaugeProgMem;
 		wxSpinCtrl* m_pSpnFreq;
 		wxMenuItem* m_pMenuitemVcd;
@@ -78,7 +79,7 @@ class mainFrame: public wxFrame
 		wxMenuItem* m_pMenuitemQuit;
 		wxStaticText* m_pLblProgMem;
 		wxMenuItem* m_pMenuitemReset;
-		wxStaticText* StaticText4;
+		wxMenuItem* m_pMenuitemLogmcu;
 		wxStaticText* StaticText2;
 		wxMenuItem* m_pMenuitemFirmware;
 		wxTextCtrl* m_pTxtLog;
@@ -110,7 +111,7 @@ class mainFrame: public wxFrame
 		static const long ID_LBLPROGMEM;
 		static const long ID_STATICTEXT2;
 		static const long ID_GUAGESRAM;
-		static const long ID_STATICTEXT3;
+		static const long ID_LBLSRAM;
 		static const long ID_TXTLOG;
 		static const long ID_PNLMAIN;
 		static const long ID_MENUITEM_FIRMWARE;
@@ -130,6 +131,7 @@ class mainFrame: public wxFrame
 		static const long ID_MENUITEM_RESET;
 		static const long ID_MENUITEM_LOGTOFILE;
 		static const long ID_MENUITEM_LOGVERBOSE;
+		static const long ID_MENUITEM_LOGMCU;
 		static const long idMenuAbout;
 		static const long ID_STATUSBAR;
 		//*)
@@ -159,6 +161,7 @@ class mainFrame: public wxFrame
 		void OnMenuitemVcdSelected(wxCommandEvent& event);
 		void OnMenuitemSaveProfileSelected(wxCommandEvent& event);
 		void OnMenuitemLogVerboseSelected(wxCommandEvent& event);
+		void OnMenuitemLogmcuSelected(wxCommandEvent& event);
 		//*)
 
         /** @brief  Updates dispaly with current running state

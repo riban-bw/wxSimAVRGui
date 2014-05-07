@@ -36,7 +36,7 @@ const long mainFrame::ID_GAUGEPROGMEM = wxNewId();
 const long mainFrame::ID_LBLPROGMEM = wxNewId();
 const long mainFrame::ID_STATICTEXT2 = wxNewId();
 const long mainFrame::ID_GUAGESRAM = wxNewId();
-const long mainFrame::ID_STATICTEXT3 = wxNewId();
+const long mainFrame::ID_LBLSRAM = wxNewId();
 const long mainFrame::ID_TXTLOG = wxNewId();
 const long mainFrame::ID_PNLMAIN = wxNewId();
 const long mainFrame::ID_MENUITEM_FIRMWARE = wxNewId();
@@ -56,6 +56,7 @@ const long mainFrame::ID_MENUITEM_STOP = wxNewId();
 const long mainFrame::ID_MENUITEM_RESET = wxNewId();
 const long mainFrame::ID_MENUITEM_LOGTOFILE = wxNewId();
 const long mainFrame::ID_MENUITEM_LOGVERBOSE = wxNewId();
+const long mainFrame::ID_MENUITEM_LOGMCU = wxNewId();
 const long mainFrame::idMenuAbout = wxNewId();
 const long mainFrame::ID_STATUSBAR = wxNewId();
 //*)
@@ -135,8 +136,8 @@ mainFrame::mainFrame(wxWindow* parent,wxWindowID id,const wxPoint& pos,const wxS
 	FlexGridSizer4->Add(StaticText3, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	m_pGaugeSram = new wxGauge(m_pPnlMain, ID_GUAGESRAM, 100, wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_GUAGESRAM"));
 	FlexGridSizer4->Add(m_pGaugeSram, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	StaticText4 = new wxStaticText(m_pPnlMain, ID_STATICTEXT3, _("00000/00000"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT3"));
-	FlexGridSizer4->Add(StaticText4, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	m_pLblSram = new wxStaticText(m_pPnlMain, ID_LBLSRAM, _("00000/00000"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_LBLSRAM"));
+	FlexGridSizer4->Add(m_pLblSram, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	FlexGridSizer1->Add(FlexGridSizer4, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	FlexGridSizer2 = new wxFlexGridSizer(0, 1, 0, 0);
 	FlexGridSizer2->AddGrowableCol(0);
@@ -198,6 +199,8 @@ mainFrame::mainFrame(wxWindow* parent,wxWindowID id,const wxPoint& pos,const wxS
 	m_pMenuLog->Append(m_pMenuitemLogVerbose);
 	m_pMenubar->Append(m_pMenuLog, _("Log"));
 	Menu2 = new wxMenu();
+	m_pMenuitemLogmcu = new wxMenuItem(Menu2, ID_MENUITEM_LOGMCU, _("Log MCU details"), _("Prints details of current MCU to log"), wxITEM_NORMAL);
+	Menu2->Append(m_pMenuitemLogmcu);
 	MenuItem2 = new wxMenuItem(Menu2, idMenuAbout, _("About\tF1"), _("Show info"), wxITEM_NORMAL);
 	Menu2->Append(MenuItem2);
 	m_pMenubar->Append(Menu2, _("Help"));
@@ -229,6 +232,7 @@ mainFrame::mainFrame(wxWindow* parent,wxWindowID id,const wxPoint& pos,const wxS
 	Connect(ID_MENUITEM_RESET,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&mainFrame::OnMenuitemMcuReset);
 	Connect(ID_MENUITEM_LOGTOFILE,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&mainFrame::OnMenuitemLogToFileSelected);
 	Connect(ID_MENUITEM_LOGVERBOSE,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&mainFrame::OnMenuitemLogVerboseSelected);
+	Connect(ID_MENUITEM_LOGMCU,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&mainFrame::OnMenuitemLogmcuSelected);
 	Connect(idMenuAbout,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&mainFrame::OnAbout);
 	//*)
     Connect(wxID_ANY, wxEVT_CLOSE_WINDOW,(wxObjectEventFunction)&mainFrame::OnClose);
@@ -292,18 +296,6 @@ void mainFrame::OnClose(wxCloseEvent &event)
     Destroy();
 }
 
-void mainFrame::OnAbout(wxCommandEvent& event)
-{
-    wxMessageBox("wxSimAVRGui - Brian Walton\n(C) riban 2014", "About");
-    if(m_pAvr)
-    {
-        wxLogMessage("AVR type: %s", m_pAvr->GetMcuType());
-        wxLogMessage("Flash size: %d", m_pAvr->GetFlashSize());
-        wxLogMessage("SRAM size: %d", m_pAvr->GetSramSize());
-        wxLogMessage("EEPROM size: %d", m_pAvr->GetEepromSize());
-    }
-}
-
 void mainFrame::OnMenuitemMcuStart(wxCommandEvent& event)
 {
     wxLogDebug("__FUNCTION__");
@@ -333,17 +325,7 @@ void mainFrame::OnMenuitemMcuStart(wxCommandEvent& event)
                     m_pAvr->AddSignal(nIndex, wxString::Format("Output %d", nIndex));
                 m_pAvr->StartVcd();
             }
-            if(m_pAvr->IsPaused())
-            {
-//                m_pAvr->Reset();
-                if(wxTHREAD_NO_ERROR != m_pAvr->Resume())
-                    wxLogError(wxT("Can't resume thread!"));
-            }
-            else if(wxTHREAD_NO_ERROR != m_pAvr->Run())
-            {
-                wxLogError(wxT("Can't run the thread! Error"));
-                return;
-            }
+            m_pAvr->Start();
     }
 }
 
@@ -359,7 +341,7 @@ void mainFrame::OnMenuitemMcuStop(wxCommandEvent& event)
 
 void mainFrame::OnMenuitemMcuPause(wxCommandEvent& event)
 {
-    if(m_pAvr && m_pAvr->IsRunning())
+    if(m_pAvr)
     {
         if(m_pAvr->Pause() != wxTHREAD_NO_ERROR )
             wxLogError(wxT("Can't pause the thread!"));
@@ -624,6 +606,8 @@ void mainFrame::WriteConfig()
 void mainFrame::OnSpnFreqChange(wxSpinEvent& event)
 {
     m_lFrequency = m_pSpnFreq->GetValue();
+    if(m_pAvr)
+        m_pAvr->SetFrequency(m_lFrequency);
 }
 
 void mainFrame::HandleAvrStatus(wxCommandEvent &event)
@@ -700,9 +684,9 @@ void mainFrame::OnMenuitemLoadHexSelected(wxCommandEvent& event)
     if(m_pFnHex)
     {
         sPath = m_pFnHex->GetPath();
-        sFile = m_pFnHex->GetName();
+        sFile = m_pFnHex->GetFullName();
     }
-    wxFileDialog dlg(this, "Select hex file", sPath, sFile, "Intel hex files (*.ihex;*.hex)|*.ihex;*.hex|All files (*.*)|*.*");
+    wxFileDialog dlg(this, "Select hex file", sPath, sFile, "Intel hex files (*.ihex *.hex)|*.ihex;*.hex|All files (*.*)|*.*");
     int nResult = dlg.ShowModal();
     if(nResult != wxID_OK)
         return;
@@ -732,9 +716,14 @@ void mainFrame::OnMenuitemWipeSelected(wxCommandEvent& event)
     delete m_pFnHex;
     m_pFnHex = NULL;
     LoadHex(wxEmptyString);
+//    if(m_pAvr)
+//        m_pAvr->Init(); //!@todo This is causing tight loop beacuse avr_ioctl ports link circularly
+
+
     if(m_pAvr)
-        m_pAvr->Init(); //!@todo This is causing tight loop beacuse avr_ioctl ports link circularly
-    wxLogMessage("Wiping MCU");
+        m_pAvr->Delete();
+    m_pAvr = new wxAvr(this, m_sDeviceType, m_lFrequency);
+    wxLogMessage("MCU wiped");
 }
 
 void mainFrame::EnableLogToFile(bool bEnable)
@@ -925,16 +914,19 @@ bool mainFrame::SetDeviceType(wxString sDeviceType)
     m_pAvr = new wxAvr(this, sDeviceType, m_lFrequency);
     if(!m_pAvr)
         return false;
-    if(m_pAvr->Create() != wxTHREAD_NO_ERROR)
-        return false;
     m_sDeviceType = sDeviceType;
     m_pLblDeviceType->SetLabel(m_sDeviceType);
     long lId = GetDeviceID(sDeviceType);
     m_pMenuDevice->Check(lId, true);
+    wxLogMessage("Selected MCU type %s", m_sDeviceType);
     m_pLblEeprom->SetLabel(wxString::Format("%d", m_pAvr->GetEepromSize()));
 
     if(m_pFnHex)
         LoadHex(m_pFnHex->GetFullPath());
+
+    int nSram = 0; //!@todo calculate SRAM usage - not here but when program loaded
+    m_pLblSram->SetLabel(wxString::Format("%d/%d", nSram, m_pAvr->GetSramSize()));
+    m_pGaugeSram->SetValue(nSram);
 
     return true;
 }
@@ -960,4 +952,22 @@ void mainFrame::LoadHex(wxString sFilename)
         m_pGaugeProgMem->SetValue(0);
         m_pLblProgMem->SetLabel("00000/00000");
     }
+}
+
+void mainFrame::OnAbout(wxCommandEvent& event)
+{
+    wxMessageBox("wxSimAVRGui - Brian Walton\n(C) riban 2014", "About");
+}
+
+void mainFrame::OnMenuitemLogmcuSelected(wxCommandEvent& event)
+{
+    if(m_pAvr)
+    {
+        wxLogMessage("AVR type: %s", m_pAvr->GetMcuType());
+        wxLogMessage("Flash size: %d", m_pAvr->GetFlashSize());
+        wxLogMessage("SRAM size: %d", m_pAvr->GetSramSize());
+        wxLogMessage("EEPROM size: %d", m_pAvr->GetEepromSize());
+    }
+    else
+        wxLogMessage("No MCU configured");
 }
