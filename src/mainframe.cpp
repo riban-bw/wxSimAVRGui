@@ -47,7 +47,7 @@ const long mainFrame::ID_MENUITEM_FIRMWARE = wxNewId();
 const long mainFrame::ID_MENUITEM_CODE = wxNewId();
 const long mainFrame::ID_MENUITEM_LOADHEX = wxNewId();
 const long mainFrame::idMenuQuit = wxNewId();
-const long mainFrame::ID_MENUITEM_SAVEPROFILE = wxNewId();
+const long mainFrame::ID_MENUITEM_MODIFYPROFILE = wxNewId();
 const long mainFrame::ID_MENUITEM_PROFILE = wxNewId();
 const long mainFrame::ID_MENUITEM_MCU = wxNewId();
 const long mainFrame::ID_MENUITEM_WIPE = wxNewId();
@@ -174,8 +174,8 @@ mainFrame::mainFrame(wxWindow* parent,wxWindowID id,const wxPoint& pos,const wxS
 	m_pMenubar->Append(Menu1, _("&File"));
 	m_pMenuDevice = new wxMenu();
 	m_pMenuProfile = new wxMenu();
-	m_pMenuitemSaveProfile = new wxMenuItem(m_pMenuProfile, ID_MENUITEM_SAVEPROFILE, _("Save current profile\tShift+Ctrl+S"), _("Saves the current profile with new name"), wxITEM_NORMAL);
-	m_pMenuProfile->Append(m_pMenuitemSaveProfile);
+	m_pMenuitemModifyProfile = new wxMenuItem(m_pMenuProfile, ID_MENUITEM_MODIFYPROFILE, _("Modify Profiles\tShift+Ctrl+P"), _("Add, modify or remove profile"), wxITEM_NORMAL);
+	m_pMenuProfile->Append(m_pMenuitemModifyProfile);
 	m_pMenuDevice->Append(ID_MENUITEM_PROFILE, _("Profile"), m_pMenuProfile, wxEmptyString);
 	m_pMenuMcu = new wxMenu();
 	m_pMenuMcu->Break();
@@ -241,7 +241,7 @@ mainFrame::mainFrame(wxWindow* parent,wxWindowID id,const wxPoint& pos,const wxS
 	Connect(ID_MENUITEM_CODE,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&mainFrame::OnMenuitemCodeSelected);
 	Connect(ID_MENUITEM_LOADHEX,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&mainFrame::OnMenuitemLoadHexSelected);
 	Connect(idMenuQuit,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&mainFrame::OnQuit);
-	Connect(ID_MENUITEM_SAVEPROFILE,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&mainFrame::OnMenuitemSaveProfileSelected);
+	Connect(ID_MENUITEM_MODIFYPROFILE,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&mainFrame::OnMenuitemModifyProfileSelected);
 	Connect(ID_MENUITEM_WIPE,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&mainFrame::OnMenuitemWipeSelected);
 	Connect(ID_MENUITEM_SERIAL,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&mainFrame::OnMenuitemSerialSelected);
 	Connect(ID_MENUITEM_VCD,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&mainFrame::OnMenuitemVcdSelected);
@@ -470,11 +470,11 @@ void mainFrame::OnMenuProfile(wxCommandEvent& event)
     avrProfile* pProfile = m_mProfiles[event.GetId()];
     if(!pProfile)
         return;
-    if(pProfile->sDevice.IsEmpty())
+    if(pProfile->GetDeviceType().IsEmpty())
         return;
-    m_lFrequency = pProfile->lFrequency;
+    m_lFrequency = pProfile->GetFrequency();
     m_pSpnFreq->SetValue(m_lFrequency);
-    SetDeviceType(pProfile->sDevice);
+    SetDeviceType(pProfile->GetDeviceType());
 }
 
 bool mainFrame::ReadConfig()
@@ -497,13 +497,12 @@ bool mainFrame::ReadConfig()
     bool bMore = pConfig->GetFirstGroup(sGroup, lCookie);
     while(bMore)
     {
-        wxString sName, sDeviceType, sTitle, sDescription;
+        wxString sName, sDeviceType, sDescription;
         long lFrequency;
         pConfig->Read(sGroup + "/device", &sDeviceType, wxEmptyString);
-        pConfig->Read(sGroup + "/name", &sTitle, wxEmptyString);
         pConfig->Read(sGroup + "/description", &sDescription, wxEmptyString);
         pConfig->Read(sGroup + "/frequency", &lFrequency, 0l);
-        if(!AddProfile(sGroup, sDeviceType, lFrequency, sTitle, sDescription))
+        if(!AddProfile(sGroup, sDeviceType, lFrequency, sDescription))
             wxLogError("Configuration error: Bad configuration of profile [%s]", sGroup.c_str());
         bMore = pConfig->GetNextGroup(sGroup, lCookie);
     }
@@ -628,9 +627,9 @@ void mainFrame::WriteConfig()
     for(std::map<long,avrProfile*>::iterator it = m_mProfiles.begin(); it != m_mProfiles.end(); it++)
     {
         avrProfile* pProfile = it->second;
-        pConfig->Write(pProfile->name + "/description", pProfile->description);
-        pConfig->Write(pProfile->name + "/frequency", pProfile->lFrequency);
-        pConfig->Write(pProfile->name + "/device", pProfile->sDevice);
+        pConfig->Write(pProfile->GetName() + "/description", pProfile->GetDescription());
+        pConfig->Write(pProfile->GetName() + "/frequency", pProfile->GetFrequency());
+        pConfig->Write(pProfile->GetName() + "/device", pProfile->GetDeviceType());
     }
     delete pConfig;
 }
@@ -831,35 +830,7 @@ void mainFrame::OnMenuitemVcdSelected(wxCommandEvent& event)
     m_bVcdEnabled = m_pMenuitemVcd->IsChecked();
 }
 
-void mainFrame::OnMenuitemSaveProfileSelected(wxCommandEvent& event)
-{
-    if(m_sDeviceType.IsEmpty())
-    {
-        wxLogMessage("Can't create profile when MCU not defined");
-        return;
-    }
-    ProfileDialog dlg(this);
-    dlg.SetProfileName(m_sDeviceType);
-    dlg.SetFrequency(m_lFrequency);
-    for(std::map<long,wxString>::iterator it = m_mDevices.begin(); it != m_mDevices.end(); it++)
-        dlg.AddMcu(it->second);
-    dlg.SetDeviceType(m_sDeviceType);
-
-    if(dlg.ShowModal() == wxID_OK)
-    {
-        wxString sName = dlg.GetProfileName();
-        wxString sDeviceType = dlg.GetDeviceType();
-        if(sDeviceType.IsEmpty())
-            return;
-        long lFrequency = dlg.GetFrequency();
-        wxString sTitle = dlg.GetTitle();
-        wxString sDescription = dlg.GetDescription();
-
-        AddProfile(sName, sDeviceType, lFrequency, sTitle, sDescription);
-    }
-}
-
-avrProfile* mainFrame::AddProfile(wxString sName, wxString sDeviceType, long lFrequency, wxString sTitle, wxString sDescription)
+avrProfile* mainFrame::AddProfile(wxString sName, wxString sDeviceType, long lFrequency, wxString sDescription)
 {
     if(sName.IsEmpty())
     {
@@ -870,7 +841,7 @@ avrProfile* mainFrame::AddProfile(wxString sName, wxString sDeviceType, long lFr
     bool bDuplicate = false;
     for(std::map<long,avrProfile*>::iterator it = m_mProfiles.begin(); it != m_mProfiles.end(); ++it)
     {
-        if(it->second->name != sName)
+        if(it->second->GetName() != sName)
             continue;
         bDuplicate = true;
         break;
@@ -881,19 +852,13 @@ avrProfile* mainFrame::AddProfile(wxString sName, wxString sDeviceType, long lFr
            return NULL;
     }
 
-    avrProfile* pProfile = new avrProfile;
-    pProfile->sDevice = sDeviceType;
-    pProfile->id = wxNewId();
-    if(sTitle.IsEmpty())
-        pProfile->name = sName;
-    else
-        pProfile->name = sTitle;
+    avrProfile* pProfile = new avrProfile(sName, wxNewId(), sDeviceType, lFrequency, sDescription);
     if(!sDescription.IsEmpty())
-        pProfile->description = sDescription;
-    pProfile->lFrequency = lFrequency?lFrequency:8000000l;
-    m_mProfiles[pProfile->id] = (pProfile);
-    m_pMenuProfile->Append(new wxMenuItem(m_pMenuProfile, pProfile->id, pProfile->name, pProfile->description, wxITEM_NORMAL));
-    Connect(pProfile->id, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&mainFrame::OnMenuProfile);
+        pProfile->SetDescription(sDescription);
+    pProfile->SetFrequency(lFrequency?lFrequency:8000000l);
+    m_mProfiles[pProfile->GetId()] = (pProfile);
+    m_pMenuProfile->Append(new wxMenuItem(m_pMenuProfile, pProfile->GetId(), pProfile->GetName(), pProfile->GetDescription(), wxITEM_NORMAL));
+    Connect(pProfile->GetId(), wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&mainFrame::OnMenuProfile);
     return pProfile;
 }
 
@@ -1023,4 +988,51 @@ void mainFrame::OnMenuitemResetLayoutSelected(wxCommandEvent& event)
     m_pAuiManager->LoadPerspective("layout2|name=ToolbarControl;caption=Toolbar;state=8956;dir=1;layer=10;row=0;pos=49;prop=100000;bestw=111;besth=26;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=ToolbarFile;caption=File;state=8956;dir=1;layer=10;row=0;pos=0;prop=100000;bestw=47;besth=34;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=840;floaty=160;floatw=-1;floath=-1|name=PanelMain;caption=Main Panel;state=768;dir=5;layer=0;row=0;pos=0;prop=100000;bestw=447;besth=192;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=0;floaty=0;floatw=0;floath=0|dock_size(1,10,0)=36|dock_size(5,0,0)=120|");
     m_pMenuitemToolbarControl->Check(m_pAuiManager->GetPane("ToolbarControl").IsShown());
     m_pMenuitemToolbarFile->Check(m_pAuiManager->GetPane("ToolbarFile").IsShown());
+}
+
+void mainFrame::OnMenuitemModifyProfileSelected(wxCommandEvent& event)
+{
+    ProfileDialog dlg(this, &m_mProfiles);
+    dlg.SetProfileName(m_sDeviceType);
+    dlg.SetFrequency(m_lFrequency);
+    for(std::map<long,wxString>::iterator it = m_mDevices.begin(); it != m_mDevices.end(); it++)
+        dlg.AddMcu(it->second);
+    dlg.SetDeviceType(m_sDeviceType);
+
+    if(dlg.ShowModal() == wxID_OK)
+    {
+//        //!@todo put this in the profiledialog
+//        wxString sName = dlg.GetProfileName();
+//        wxString sDeviceType = dlg.GetDeviceType();
+//        if(sDeviceType.IsEmpty())
+//            return;
+//        long lFrequency = dlg.GetFrequency();
+//        wxString sTitle = dlg.GetTitle();
+//        wxString sDescription = dlg.GetDescription();
+//
+//        AddProfile(sName, sDeviceType, lFrequency, sDescription);
+    }
+    PopulateProfilesMenu();
+}
+
+void mainFrame::PopulateProfilesMenu()
+{
+    for(unsigned int nIndex = m_pMenuProfile->GetMenuItemCount() - 1; nIndex > 1; nIndex--)
+    {
+        wxMenuItem* pItem = m_pMenuProfile->FindItemByPosition(nIndex);
+        if(!pItem)
+            continue;
+        long lId = pItem->GetId();
+        if(Disconnect(lId))
+            wxLogMessage("Disconnected event %ld", lId);
+        m_pMenuProfile->Delete(lId);
+    }
+    for(std::map<long,avrProfile*>::iterator it = m_mProfiles.begin(); it != m_mProfiles.end(); it++)
+    {
+        avrProfile* pProfile = it->second;
+        if(!pProfile)
+            continue;
+        m_pMenuProfile->Append(new wxMenuItem(m_pMenuProfile, pProfile->GetId(), pProfile->GetName(), pProfile->GetDescription(), wxITEM_NORMAL));
+        Connect(pProfile->GetId(), wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&mainFrame::OnMenuProfile);
+    }
 }

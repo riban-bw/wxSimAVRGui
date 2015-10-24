@@ -281,11 +281,11 @@
 				<label>Device</label>
 				<object class="wxMenu" name="ID_MENUITEM_PROFILE" variable="m_pMenuProfile" member="yes">
 					<label>Profile</label>
-					<object class="wxMenuItem" name="ID_MENUITEM_SAVEPROFILE" variable="m_pMenuitemSaveProfile" member="yes">
-						<label>Save current profile</label>
-						<accel>Shift+Ctrl+S</accel>
-						<help>Saves the current profile with new name</help>
-						<handler function="OnMenuitemSaveProfileSelected" entry="EVT_MENU" />
+					<object class="wxMenuItem" name="ID_MENUITEM_MODIFYPROFILE" variable="m_pMenuitemModifyProfile" member="yes">
+						<label>Modify Profiles</label>
+						<accel>Shift+Ctrl+P</accel>
+						<help>Add, modify or remove profile</help>
+						<handler function="OnMenuitemModifyProfileSelected" entry="EVT_MENU" />
 					</object>
 				</object>
 				<object class="wxMenu" name="ID_MENUITEM_MCU" variable="m_pMenuMcu" member="yes">

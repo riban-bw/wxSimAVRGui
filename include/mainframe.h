@@ -23,17 +23,7 @@
 //*)
 
 #include <map>
-
-/** Class represents a profile of AVR device */
-class avrProfile
-{
-    public:
-        long id; //!< Unique ID used by application to identify profile, e.g. as menu event id
-        wxString name; //!< Descriptive name of profile used in menus and logs
-        wxString description; //!< Long description
-        wxString sDevice; //!< Name of device type
-        long lFrequency; //!< Frequency of device
-};
+#include "avrprofile.h"
 
 class wxAvr;
 class wxFileName;
@@ -84,11 +74,11 @@ class mainFrame: public wxFrame
 		wxMenu* Menu4;
 		wxStaticText* m_pLblProgMem;
 		wxMenuItem* m_pMenuitemReset;
+		wxMenuItem* m_pMenuitemModifyProfile;
 		wxMenuItem* m_pMenuitemLogmcu;
 		wxStaticText* StaticText2;
 		wxMenuItem* m_pMenuitemFirmware;
 		wxTextCtrl* m_pTxtLog;
-		wxMenuItem* m_pMenuitemSaveProfile;
 		wxMenu* m_pMenuMcu;
 		wxMenuItem* m_pMenuitemVcdFile;
 		wxStaticText* m_pLblFrequency;
@@ -125,7 +115,7 @@ class mainFrame: public wxFrame
 		static const long ID_MENUITEM_CODE;
 		static const long ID_MENUITEM_LOADHEX;
 		static const long idMenuQuit;
-		static const long ID_MENUITEM_SAVEPROFILE;
+		static const long ID_MENUITEM_MODIFYPROFILE;
 		static const long ID_MENUITEM_PROFILE;
 		static const long ID_MENUITEM_MCU;
 		static const long ID_MENUITEM_WIPE;
@@ -169,12 +159,12 @@ class mainFrame: public wxFrame
 		void OnMenuitemMcuReset(wxCommandEvent& event);
 		void OnMenuitemVcdFileSelected(wxCommandEvent& event);
 		void OnMenuitemVcdSelected(wxCommandEvent& event);
-		void OnMenuitemSaveProfileSelected(wxCommandEvent& event);
 		void OnMenuitemLogVerboseSelected(wxCommandEvent& event);
 		void OnMenuitemLogmcuSelected(wxCommandEvent& event);
 		void OnMenuitemToolbarControlSelected(wxCommandEvent& event);
 		void OnMenuitemToolbarFileSelected(wxCommandEvent& event);
 		void OnMenuitemResetLayoutSelected(wxCommandEvent& event);
+		void OnMenuitemModifyProfileSelected(wxCommandEvent& event);
 		//*)
 
         /** @brief  Updates dispaly with current running state
@@ -216,11 +206,10 @@ class mainFrame: public wxFrame
         *   @param  sName Name of profile
         *   @param  sDeviceType Name of device type
         *   @param  lFrequency MCU frequency
-        *   @param  sTitle Descriptive name of profile. Default is profile name.
         *   @param  sDescription Long description of profile. Default is empty.
         *   @return <i>avrProfile*</i> Pointer to new profile or null if failed to create new profile
         */
-        avrProfile* AddProfile(wxString sName, wxString sDeviceType, long lFrequency = 8000000l, wxString sTitle = wxEmptyString, wxString sDescription = wxEmptyString);
+        avrProfile* AddProfile(wxString sName, wxString sDeviceType, long lFrequency = 8000000l, wxString sDescription = "");
 
         /** @brief  Gets a id of avr device type
         *   @param  sName Name of the MCU device
@@ -244,6 +233,10 @@ class mainFrame: public wxFrame
         *   @param  sFilename Hex filename
         */
         void LoadHex(wxString sFilename);
+
+        /** @brief  Populates the profiles menu
+        */
+        void PopulateProfilesMenu();
 
         std::map<long,wxString> m_mDevices; //!< Map of supported AVR device types, indexed by wxEvent ID
         std::map<long,avrProfile*> m_mProfiles; //!< Map pointers to AVR profiles, indexed by wxEvent ID
